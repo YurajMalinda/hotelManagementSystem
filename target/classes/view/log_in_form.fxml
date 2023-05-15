@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="loginPane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.logInFormController">
+    <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#898a89" height="484.0" layoutX="153.0" layoutY="90.0" opacity="0.39" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" width="609.0" />
+        <ImageView fitHeight="671.0" fitWidth="914.0" layoutX="-3.0" opacity="0.25">
+            <image>
+                <Image url="@../image/hotel.jpg" />
+            </image>
+        </ImageView>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="358.0" layoutX="273.0" layoutY="149.0" stroke="#a9c6b1" strokeType="INSIDE" strokeWidth="2.0" width="368.0" />
+      <TextField fx:id="txtUserName" focusTraversable="false" layoutX="426.0" layoutY="302.0" prefHeight="37.0" prefWidth="187.0" promptText="User name" styleClass="text-field" />
+      <Label layoutX="330.0" layoutY="304.0" styleClass="text-field" text="User name -" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label layoutX="329.0" layoutY="358.0" styleClass="text-field" text="Password -" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+        <Label layoutX="393.0" layoutY="179.0" text="Login Here" textAlignment="CENTER" textFill="#c57676">
+            <font>
+                <Font name="System Bold" size="25.0" />
+            </font>
+        </Label>
+      <JFXButton fx:id="btnLogin" buttonType="RAISED" focusTraversable="false" layoutX="493.0" layoutY="426.0" onAction="#btnLoginOnAction" prefHeight="36.0" prefWidth="114.0" ripplerFill="#451717" styleClass="button-update" text="LogIn" textAlignment="CENTER" />
+      <Label layoutX="330.0" layoutY="54.0" prefHeight="36.0" prefWidth="248.0" text="~~WELCOME~~" textAlignment="CENTER">
+         <font>
+            <Font name="Times New Roman Bold" size="31.0" />
+         </font></Label>
+      <PasswordField fx:id="txtPassword" focusTraversable="false" layoutX="426.0" layoutY="353.0" prefHeight="31.0" prefWidth="187.0" promptText="Password" />
+      <Label layoutX="329.0" layoutY="248.0" styleClass="text-field" text="Possition - " textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="cmbTitle" layoutX="426.0" layoutY="243.0" prefHeight="31.0" prefWidth="187.0" />
+    </children>
+    <stylesheets>
+        <URL value="@../style/CrudFrom.css" />
+        <URL value="@../style/From.css" />
+    </stylesheets>
+</AnchorPane>
