@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Food;
-import lk.ijse.hotel.dto.tm.FoodTM;
-import lk.ijse.hotel.model.FoodModel;
+import lk.ijse.hotel.dao.FoodDAOImpl;
+import lk.ijse.hotel.dto.FoodDTO;
+import lk.ijse.hotel.tm.FoodTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -61,14 +61,14 @@ public class FoodFormController {
     private void getAll() {
         try {
             ObservableList<FoodTM> obList = FXCollections.observableArrayList();
-            List<Food> foodList = FoodModel.getAll();
+            List<FoodDTO> foodDTOList = FoodDAOImpl.getAll();
 
-            for (Food food : foodList) {
+            for (FoodDTO foodDTO : foodDTOList) {
                 obList.add(new FoodTM(
-                        food.getId(),
-                        food.getName(),
-                        food.getDetails(),
-                        food.getPrice()
+                        foodDTO.getId(),
+                        foodDTO.getName(),
+                        foodDTO.getDetails(),
+                        foodDTO.getPrice()
                 ));
             }
             tblFood.setItems(obList);
@@ -99,7 +99,7 @@ public class FoodFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = FoodModel.delete(id);
+            boolean isDeleted = FoodDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -116,7 +116,7 @@ public class FoodFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = FoodModel.update(id, name, details, price);
+            boolean isUpdated = FoodDAOImpl.update(id, name, details, price);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food updated!").show();
                 getAll();
@@ -140,8 +140,8 @@ public class FoodFormController {
             // Validate food ID
             validateFoodId(id);
     
-            Food food = new Food(id, name, details, price);
-            boolean isSaved = FoodModel.add(food);
+            FoodDTO foodDTO = new FoodDTO(id, name, details, price);
+            boolean isSaved = FoodDAOImpl.add(foodDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food saved!").show();
                 getAll();
@@ -177,12 +177,12 @@ public class FoodFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Food food = FoodModel.search(txtId.getText());
-            if (food != null) {
-                txtId.setText(food.getId());
-                txtName.setText(food.getName());
-                txtDetails.setText(food.getDetails());
-                txtPrice.setText(String.valueOf(food.getPrice()));
+            FoodDTO foodDTO = FoodDAOImpl.search(txtId.getText());
+            if (foodDTO != null) {
+                txtId.setText(foodDTO.getId());
+                txtName.setText(foodDTO.getName());
+                txtDetails.setText(foodDTO.getDetails());
+                txtPrice.setText(String.valueOf(foodDTO.getPrice()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

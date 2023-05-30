@@ -12,11 +12,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Booking;
-import lk.ijse.hotel.dto.tm.BookingTM;
-import lk.ijse.hotel.model.BookingModel;
-import lk.ijse.hotel.model.GuestModel;
-import lk.ijse.hotel.model.RoomModel;
+import lk.ijse.hotel.dao.BookingDAOImpl;
+import lk.ijse.hotel.dao.GuestDAOImpl;
+import lk.ijse.hotel.dto.BookingDTO;
+import lk.ijse.hotel.tm.BookingTM;
+import lk.ijse.hotel.dao.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -68,7 +68,7 @@ public class BookingFormController {
     private void loadGuestIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = GuestModel.loadIds();
+            List<String> ids = GuestDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
@@ -83,7 +83,7 @@ public class BookingFormController {
     private void loadRoomIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = RoomModel.loadIds();
+            List<String> ids = RoomDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
@@ -108,16 +108,16 @@ public class BookingFormController {
     private void getAll() {
         try {
             ObservableList<BookingTM> obList = FXCollections.observableArrayList();
-            List<Booking> bookingList = BookingModel.getAll();
+            List<BookingDTO> bookingDTOList = BookingDAOImpl.getAll();
 
-            for (Booking booking : bookingList) {
+            for (BookingDTO bookingDTO : bookingDTOList) {
                 obList.add(new BookingTM(
-                        booking.getGuestId(),
-                        booking.getBookingId(),
-                        booking.getBookingDate(),
-                        booking.getRoomId(),
-                        booking.getCheckIn(),
-                        booking.getCheckOut()
+                        bookingDTO.getGuestId(),
+                        bookingDTO.getBookingId(),
+                        bookingDTO.getBookingDate(),
+                        bookingDTO.getRoomId(),
+                        bookingDTO.getCheckIn(),
+                        bookingDTO.getCheckOut()
                 ));
             }
             tblBooking.setItems(obList);
@@ -148,7 +148,7 @@ public class BookingFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtBookingId.getText();
         try {
-            boolean isDeleted = BookingModel.delete(id);
+            boolean isDeleted = BookingDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                         getAll();
@@ -169,7 +169,7 @@ public class BookingFormController {
             // Validate booking ID
             validateBookingId(bookingId);
 
-            boolean isUpdated = BookingModel.update(guestId, bookingId, roomId, checkOut);
+            boolean isUpdated = BookingDAOImpl.update(guestId, bookingId, roomId, checkOut);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
                         getAll();
@@ -200,13 +200,13 @@ public class BookingFormController {
             // Validate booking ID
             validateBookingId(bookingId);
 
-            Booking booking = new Booking(guestId, bookingId, bookingDate, roomId, checkIn, checkOut);
+            BookingDTO bookingDTO = new BookingDTO(guestId, bookingId, bookingDate, roomId, checkIn, checkOut);
 
             // Save booking to database
-            boolean isSaved = BookingModel.add(booking);
+            boolean isSaved = BookingDAOImpl.add(bookingDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
-                BookingModel.releaseRoom(roomId);
+                BookingDAOImpl.releaseRoom(roomId);
                 getAll();
             }
         } catch (IllegalArgumentException e) {
@@ -242,14 +242,14 @@ public class BookingFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Booking booking = BookingModel.search(txtBookingId.getText());
-            if (booking != null) {
-                cmbGuestId.setValue(booking.getGuestId());
-                txtBookingId.setText(booking.getBookingId());
-                txtDate.setValue(LocalDate.parse(booking.getBookingDate()));
-                cmbRoomId.setValue(booking.getRoomId());
-                txtCheckIn.setValue(LocalDate.parse(booking.getCheckIn()));
-                txtCheckOut.setValue(LocalDate.parse(booking.getCheckOut()));
+            BookingDTO bookingDTO = BookingDAOImpl.search(txtBookingId.getText());
+            if (bookingDTO != null) {
+                cmbGuestId.setValue(bookingDTO.getGuestId());
+                txtBookingId.setText(bookingDTO.getBookingId());
+                txtDate.setValue(LocalDate.parse(bookingDTO.getBookingDate()));
+                cmbRoomId.setValue(bookingDTO.getRoomId());
+                txtCheckIn.setValue(LocalDate.parse(bookingDTO.getCheckIn()));
+                txtCheckOut.setValue(LocalDate.parse(bookingDTO.getCheckOut()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

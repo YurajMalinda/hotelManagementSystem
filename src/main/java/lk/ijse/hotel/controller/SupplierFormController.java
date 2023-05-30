@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Supplier;
-import lk.ijse.hotel.dto.tm.SupplierTM;
-import lk.ijse.hotel.model.SupplierModel;
+import lk.ijse.hotel.dto.SupplierDTO;
+import lk.ijse.hotel.tm.SupplierTM;
+import lk.ijse.hotel.dao.SupplierDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,14 +60,14 @@ public class SupplierFormController {
     private void getAll () {
         try {
             ObservableList<SupplierTM> obList = FXCollections.observableArrayList();
-            List<Supplier> supplierList = SupplierModel.getAll();
+            List<SupplierDTO> supplierDTOList = SupplierDAOImpl.getAll();
 
-            for (Supplier supplier : supplierList) {
+            for (SupplierDTO supplierDTO : supplierDTOList) {
                 obList.add(new SupplierTM(
-                        supplier.getId(),
-                        supplier.getName(),
-                        supplier.getContact(),
-                        supplier.getDetails()
+                        supplierDTO.getId(),
+                        supplierDTO.getName(),
+                        supplierDTO.getContact(),
+                        supplierDTO.getDetails()
                 ));
             }
            tblSupplier.setItems(obList);
@@ -98,7 +98,7 @@ public class SupplierFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = SupplierModel.delete(id);
+            boolean isDeleted = SupplierDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 //        setCellValueFactory();
@@ -122,10 +122,10 @@ public class SupplierFormController {
             // Validate Supplier ID
             validateSupplierId(id);
 
-            Supplier supplier = new Supplier(id, name, contact, details);
+            SupplierDTO supplierDTO = new SupplierDTO(id, name, contact, details);
 
 //            boolean isUpdated = SupplierModel.update(id, name, contact, details);
-            boolean isUpdated = SupplierModel.update(supplier);
+            boolean isUpdated = SupplierDAOImpl.update(supplierDTO);
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier updated!").show();
                 //        setCellValueFactory();
@@ -152,10 +152,10 @@ public class SupplierFormController {
             // Validate supplier ID
             validateSupplierId(id);
 
-            Supplier supplier = new Supplier(id, name, contact, details);
+            SupplierDTO supplierDTO = new SupplierDTO(id, name, contact, details);
 
 //            boolean isSaved = ItemModel.save(code, description, unitPrice, qtyOnHand);
-            boolean isSaved = SupplierModel.add(supplier);
+            boolean isSaved = SupplierDAOImpl.add(supplierDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier saved!").show();
                 //        setCellValueFactory();
@@ -192,12 +192,12 @@ public class SupplierFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Supplier supplier = SupplierModel.search(txtId.getText());
-            if (supplier != null) {
-                txtId.setText(supplier.getId());
-                txtName.setText(supplier.getName());
-                txtContact.setText(supplier.getContact());
-                txtDetails.setText(supplier.getDetails());
+            SupplierDTO supplierDTO = SupplierDAOImpl.search(txtId.getText());
+            if (supplierDTO != null) {
+                txtId.setText(supplierDTO.getId());
+                txtName.setText(supplierDTO.getName());
+                txtContact.setText(supplierDTO.getContact());
+                txtDetails.setText(supplierDTO.getDetails());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

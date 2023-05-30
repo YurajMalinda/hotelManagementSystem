@@ -11,11 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Booking;
-import lk.ijse.hotel.dto.tm.BookingTM;
-import lk.ijse.hotel.dto.tm.TourDetail;
-import lk.ijse.hotel.dto.tm.TourDetailTM;
-import lk.ijse.hotel.model.*;
+import lk.ijse.hotel.dao.TourDAOImpl;
+import lk.ijse.hotel.dao.TourDetailsDAOImpl;
+import lk.ijse.hotel.tm.TourDetail;
+import lk.ijse.hotel.tm.TourDetailTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -72,7 +71,7 @@ public class TourDetailsFormController {
     private void loadTourIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = TourModel.loadIds();
+            List<String> ids = TourDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
@@ -95,7 +94,7 @@ public class TourDetailsFormController {
     private void getAll() {
         try {
             ObservableList<TourDetailTM> obList = FXCollections.observableArrayList();
-            List<TourDetail> tourDetailsList = TourDetailsModel.getAll();
+            List<TourDetail> tourDetailsList = TourDetailsDAOImpl.getAll();
 
             for (TourDetail tourDetail : tourDetailsList) {
                 obList.add(new TourDetailTM(
@@ -133,7 +132,7 @@ public class TourDetailsFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = (String) cmbBookingId.getValue();
         try {
-            boolean isDeleted = TourDetailsModel.delete(id);
+            boolean isDeleted = TourDetailsDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -155,7 +154,7 @@ public class TourDetailsFormController {
             validateFields(bookingId, tourId, amount, date);
 
             TourDetail tourDetail= new TourDetail(bookingId,tourId, amount, date);
-            boolean isUpdated = TourDetailsModel.update(tourDetail);
+            boolean isUpdated = TourDetailsDAOImpl.update(tourDetail);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details updated!").show();
                 getAll();
@@ -181,7 +180,7 @@ public class TourDetailsFormController {
             validateFields(bookingId, tourId, amount, date);
 
             TourDetail tourDetail= new TourDetail(bookingId,tourId, amount, date);
-            boolean isSaved = TourDetailsModel.add(tourDetail);
+            boolean isSaved = TourDetailsDAOImpl.add(tourDetail);
             if(isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details saved!").show();
                 getAll();

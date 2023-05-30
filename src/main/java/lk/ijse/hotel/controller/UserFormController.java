@@ -13,9 +13,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.User;
-import lk.ijse.hotel.dto.tm.UserTM;
-import lk.ijse.hotel.model.UserModel;
+import lk.ijse.hotel.dto.UserDTO;
+import lk.ijse.hotel.tm.UserTM;
+import lk.ijse.hotel.dao.UserDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,14 +60,14 @@ public class UserFormController {
     private void getAll() {
         try {
             ObservableList<UserTM> obList = FXCollections.observableArrayList();
-            List<User> userList = UserModel.getAll();
+            List<UserDTO> userDTOList = UserDAOImpl.getAll();
 
-            for (User user : userList) {
+            for (UserDTO userDTO : userDTOList) {
                 obList.add(new UserTM(
-                        user.getId(),
-                        user.getName(),
-                        user.getPassword(),
-                        user.getTitle()
+                        userDTO.getId(),
+                        userDTO.getName(),
+                        userDTO.getPassword(),
+                        userDTO.getTitle()
                 ));
             }
             tblUser.setItems(obList);
@@ -98,7 +98,7 @@ public class UserFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = UserModel.delete(id);
+            boolean isDeleted = UserDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -115,7 +115,7 @@ public class UserFormController {
         String title = txtTitle.getText();
 
         try {
-            boolean isUpdated = UserModel.update(id, name, password, title);
+            boolean isUpdated = UserDAOImpl.update(id, name, password, title);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User updated!").show();
                 getAll();
@@ -139,9 +139,9 @@ public class UserFormController {
             // Validate user ID
             validateUserId(id);
 
-            User user = new User(id, name, password, title);
+            UserDTO userDTO = new UserDTO(id, name, password, title);
 
-            boolean isSaved = UserModel.add(user);
+            boolean isSaved = UserDAOImpl.add(userDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User saved!").show();
                 getAll();
@@ -179,12 +179,12 @@ public class UserFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            User user = UserModel.search(txtId.getText());
-            if (user != null) {
-                txtId.setText(user.getId());
-                txtName.setText(user.getName());
-                txtPassword.setText(user.getPassword());
-                txtTitle.setText(user.getTitle());
+            UserDTO userDTO = UserDAOImpl.search(txtId.getText());
+            if (userDTO != null) {
+                txtId.setText(userDTO.getId());
+                txtName.setText(userDTO.getName());
+                txtPassword.setText(userDTO.getPassword());
+                txtTitle.setText(userDTO.getTitle());
             }else{
                 new Alert(Alert.AlertType.ERROR, "user not found!").show();
             }

@@ -11,10 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Employee;
-import lk.ijse.hotel.dto.tm.EmployeeTM;
-import lk.ijse.hotel.model.EmployeeModel;
-
+import lk.ijse.hotel.dao.EmployeeDAOImpl;
+import lk.ijse.hotel.dto.EmployeeDTO;
+import lk.ijse.hotel.tm.EmployeeTM;
 
 
 import java.io.IOException;
@@ -75,17 +74,17 @@ public class EmployeeFormController {
     private void getAll() {
         try {
             ObservableList<EmployeeTM> obList = FXCollections.observableArrayList();
-            List<Employee> employeeList = EmployeeModel.getAll();
+            List<EmployeeDTO> employeeDTOList = EmployeeDAOImpl.getAll();
 
-            for (Employee employee : employeeList) {
+            for (EmployeeDTO employeeDTO : employeeDTOList) {
                 obList.add(new EmployeeTM(
-                        employee.getUserId(),
-                        employee.getId(),
-                        employee.getName(),
-                        employee.getGender(),
-                        employee.getEmail(),
-                        employee.getNic(),
-                        employee.getAddress()
+                        employeeDTO.getUserId(),
+                        employeeDTO.getId(),
+                        employeeDTO.getName(),
+                        employeeDTO.getGender(),
+                        employeeDTO.getEmail(),
+                        employeeDTO.getNic(),
+                        employeeDTO.getAddress()
                 ));
             }
             tblEmployee.setItems(obList);
@@ -116,7 +115,7 @@ public class EmployeeFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = EmployeeModel.delete(id);
+            boolean isDeleted = EmployeeDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -143,7 +142,7 @@ public class EmployeeFormController {
         String address = txtAddress.getText();
 
         try {
-            boolean isUpdated = EmployeeModel.update(id, name, gender, address, email, nic);
+            boolean isUpdated = EmployeeDAOImpl.update(id, name, gender, address, email, nic);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Employee updated!").show();
                 getAll();
@@ -180,10 +179,10 @@ public class EmployeeFormController {
             // Validate email address
             validateEmail(email);
 
-            Employee employee = new Employee(id, name, gender, email, nic, address, userId);
+            EmployeeDTO employeeDTO = new EmployeeDTO(id, name, gender, email, nic, address, userId);
 
             // Save employee to database
-            boolean isSaved = EmployeeModel.add(employee);
+            boolean isSaved = EmployeeDAOImpl.add(employeeDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Employee saved!").show();
                 getAll();
@@ -231,20 +230,20 @@ public class EmployeeFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Employee employee = EmployeeModel.search(txtId.getText());
-            if (employee != null) {
-                txtId.setText(employee.getId());
-                txtName.setText(employee.getName());
-                String gender = employee.getGender();
+            EmployeeDTO employeeDTO = EmployeeDAOImpl.search(txtId.getText());
+            if (employeeDTO != null) {
+                txtId.setText(employeeDTO.getId());
+                txtName.setText(employeeDTO.getName());
+                String gender = employeeDTO.getGender();
                 if (gender != null && gender.equals("Male")) {
                     chkMale.setSelected(true);
                 } else if (gender != null && gender.equals("Female")) {
                     chkFemale.setSelected(true);
                 }
-                txtEmail.setText(employee.getEmail());
-                txtNic.setText(employee.getNic());
-                txtAddress.setText(employee.getAddress());
-                txtUserId.setText(employee.getUserId());
+                txtEmail.setText(employeeDTO.getEmail());
+                txtNic.setText(employeeDTO.getNic());
+                txtAddress.setText(employeeDTO.getAddress());
+                txtUserId.setText(employeeDTO.getUserId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

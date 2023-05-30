@@ -11,12 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Employee;
-import lk.ijse.hotel.dto.Inventory;
-import lk.ijse.hotel.dto.tm.EmployeeTM;
-import lk.ijse.hotel.dto.tm.InventoryTM;
-import lk.ijse.hotel.model.EmployeeModel;
-import lk.ijse.hotel.model.InventoryModel;
+import lk.ijse.hotel.dao.InventoryDAOImpl;
+import lk.ijse.hotel.dto.InventoryDTO;
+import lk.ijse.hotel.tm.InventoryTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -62,14 +59,14 @@ public class InventoryFormController {
     private void getAll() {
         try {
             ObservableList<InventoryTM> obList = FXCollections.observableArrayList();
-            List<Inventory> inventoryList = InventoryModel.getAll();
+            List<InventoryDTO> inventoryDTOList = InventoryDAOImpl.getAll();
 
-            for (Inventory inventory : inventoryList) {
+            for (InventoryDTO inventoryDTO : inventoryDTOList) {
                 obList.add(new InventoryTM(
-                        inventory.getId(),
-                        inventory.getName(),
-                        inventory.getDetails(),
-                        inventory.getPrice()
+                        inventoryDTO.getId(),
+                        inventoryDTO.getName(),
+                        inventoryDTO.getDetails(),
+                        inventoryDTO.getPrice()
                 ));
             }
             tblInventory.setItems(obList);
@@ -100,7 +97,7 @@ public class InventoryFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = InventoryModel.delete(id);
+            boolean isDeleted = InventoryDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -117,7 +114,7 @@ public class InventoryFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = InventoryModel.update(id, name, details, price);
+            boolean isUpdated = InventoryDAOImpl.update(id, name, details, price);
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "item updated!").show();
                 getAll();
@@ -144,8 +141,8 @@ public class InventoryFormController {
 
             validatePrice(price);
 
-            Inventory inventory = new Inventory(id, name, details, price);
-            boolean isSaved = InventoryModel.add(inventory);
+            InventoryDTO inventoryDTO = new InventoryDTO(id, name, details, price);
+            boolean isSaved = InventoryDAOImpl.add(inventoryDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Item saved!").show();
                 getAll();
@@ -192,12 +189,12 @@ public class InventoryFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Inventory inventory = InventoryModel.search(txtId.getText());
-            if (inventory != null) {
-                txtId.setText(inventory.getId());
-                txtName.setText(inventory.getName());
-                txtDetails.setText(inventory.getDetails());
-                txtPrice.setText(String.valueOf(inventory.getPrice()));
+            InventoryDTO inventoryDTO = InventoryDAOImpl.search(txtId.getText());
+            if (inventoryDTO != null) {
+                txtId.setText(inventoryDTO.getId());
+                txtName.setText(inventoryDTO.getName());
+                txtDetails.setText(inventoryDTO.getDetails());
+                txtPrice.setText(String.valueOf(inventoryDTO.getPrice()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

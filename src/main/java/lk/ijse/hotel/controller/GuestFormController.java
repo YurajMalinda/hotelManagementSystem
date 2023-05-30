@@ -11,10 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.Guest;
-import lk.ijse.hotel.dto.tm.GuestTM;
-import lk.ijse.hotel.model.GuestModel;
+import lk.ijse.hotel.dao.GuestDAOImpl;
+import lk.ijse.hotel.dto.GuestDTO;
+import lk.ijse.hotel.tm.GuestTM;
 
 import java.io.IOException;
 import java.sql.*;
@@ -84,17 +83,17 @@ public class GuestFormController {
     private void getAll() {
         try {
             ObservableList<GuestTM> obList = FXCollections.observableArrayList();
-            List<Guest> gusList = GuestModel.getAll();
+            List<GuestDTO> gusList = GuestDAOImpl.getAll();
 
-            for (Guest guest : gusList) {
+            for (GuestDTO guestDTO : gusList) {
                 obList.add(new GuestTM(
-                        guest.getUserId(),
-                        guest.getId(),
-                        guest.getName(),
-                        guest.getGender(),
-                        guest.getCountry(),
-                        guest.getZipCode(),
-                        guest.getPassportId()
+                        guestDTO.getUserId(),
+                        guestDTO.getId(),
+                        guestDTO.getName(),
+                        guestDTO.getGender(),
+                        guestDTO.getCountry(),
+                        guestDTO.getZipCode(),
+                        guestDTO.getPassportId()
                 ));
             }
             tblGuest.setItems(obList);
@@ -126,7 +125,7 @@ public class GuestFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
         String id = txtId.getText();
         try {
-            boolean isDeleted = GuestModel.delete(id);
+            boolean isDeleted = GuestDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -153,7 +152,7 @@ public class GuestFormController {
         String passportId = txtPassportId.getText();
 
         try {
-            boolean isUpdated = GuestModel.update(userId, id, name, gender, country, zipcode, passportId);
+            boolean isUpdated = GuestDAOImpl.update(userId, id, name, gender, country, zipcode, passportId);
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest updated!").show();
                 getAll();
@@ -189,10 +188,10 @@ public class GuestFormController {
             // Validate Guest ID
             validateGuestId(id);
 
-            Guest guest = new Guest(userId, id, name, gender, country, zipcode, passportId);
+            GuestDTO guestDTO = new GuestDTO(userId, id, name, gender, country, zipcode, passportId);
 
             // Save guest to database
-            boolean isSaved = GuestModel.add(guest);
+            boolean isSaved = GuestDAOImpl.add(guestDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest saved!").show();
                 getAll();
@@ -233,20 +232,20 @@ public class GuestFormController {
 
     public void CodeSearchOnAction(ActionEvent actionEvent) throws SQLException {
         try {
-            Guest guest = GuestModel.search(txtId.getText());
-            if (guest != null) {
-                txtUser.setText(guest.getUserId());
-                txtId.setText(guest.getId());
-                txtName.setText(guest.getName());
-                String gender = guest.getGender();
+            GuestDTO guestDTO = GuestDAOImpl.search(txtId.getText());
+            if (guestDTO != null) {
+                txtUser.setText(guestDTO.getUserId());
+                txtId.setText(guestDTO.getId());
+                txtName.setText(guestDTO.getName());
+                String gender = guestDTO.getGender();
                 if (gender != null && gender.equals("Male")) {
                     checkMale.setSelected(true);
                 } else if (gender != null && gender.equals("Female")) {
                     checkFemale.setSelected(true);
                 }
-                txtCountry.setText(guest.getCountry());
-                txtZipcode.setText(guest.getZipCode());
-                txtPassportId.setText(guest.getPassportId());
+                txtCountry.setText(guestDTO.getCountry());
+                txtZipcode.setText(guestDTO.getZipCode());
+                txtPassportId.setText(guestDTO.getPassportId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

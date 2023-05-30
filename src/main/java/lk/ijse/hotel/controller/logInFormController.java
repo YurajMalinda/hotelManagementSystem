@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
@@ -12,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.model.LoginModel;
+import lk.ijse.hotel.dao.LoginDAOImpl;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -37,7 +36,7 @@ public class logInFormController {
     private void loadTitles() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> titles = LoginModel.loadTitles();
+            List<String> titles = LoginDAOImpl.loadTitles();
 
             for (String title : titles) {
                 obList.add(title);

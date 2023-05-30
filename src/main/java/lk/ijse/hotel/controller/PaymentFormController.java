@@ -11,13 +11,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.*;
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.Booking;
-import lk.ijse.hotel.dto.Guest;
-import lk.ijse.hotel.dto.Payment;
-import lk.ijse.hotel.dto.Room;
-import lk.ijse.hotel.dto.tm.PaymentTM;
-import lk.ijse.hotel.model.*;
+import lk.ijse.hotel.dto.BookingDTO;
+import lk.ijse.hotel.dto.GuestDTO;
+import lk.ijse.hotel.dto.PaymentDTO;
+import lk.ijse.hotel.dto.RoomDTO;
+import lk.ijse.hotel.tm.PaymentTM;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -120,19 +120,19 @@ public class PaymentFormController {
     private void getAll() {
         try {
             ObservableList<PaymentTM> obList = FXCollections.observableArrayList();
-            List<Payment> paymentList = PaymentModel.getAll();
+            List<PaymentDTO> paymentDTOList = PaymentDAOImpl.getAll();
 
-            for (Payment payment : paymentList) {
+            for (PaymentDTO paymentDTO : paymentDTOList) {
                 obList.add(new PaymentTM(
-                        payment.getPaymentId(),
-                        payment.getGuestId(),
-                        payment.getGuestName(),
-                        payment.getResId(),
-                        payment.getRoomId(),
-                        payment.getCheckIn(),
-                        payment.getCheckOut(),
-                        payment.getOrderAm(),
-                        payment.getTotal()
+                        paymentDTO.getPaymentId(),
+                        paymentDTO.getGuestId(),
+                        paymentDTO.getGuestName(),
+                        paymentDTO.getResId(),
+                        paymentDTO.getRoomId(),
+                        paymentDTO.getCheckIn(),
+                        paymentDTO.getCheckOut(),
+                        paymentDTO.getOrderAm(),
+                        paymentDTO.getTotal()
                 ));
             }
             tblPayment.setItems(obList);
@@ -145,17 +145,17 @@ public class PaymentFormController {
     public void resOnAction(){
         String code = txtBookingId.getText();
         try {
-            Booking res = BookingModel.searchById(code);
+            BookingDTO res = BookingDAOImpl.searchById(code);
             Double orderAm = getOrderAmmount(code);
 
             LocalDate checkIn = LocalDate.parse(res.getCheckIn());
             LocalDate checkOut = LocalDate.parse(res.getCheckOut());
-            Room room = RoomModel.search(res.getRoomId());
-            Double price = Double.valueOf(room.getPrice());
+            RoomDTO roomDTO = RoomDAOImpl.search(res.getRoomId());
+            Double price = Double.valueOf(roomDTO.getPrice());
             Double roomPrice = calculateRoomPrice(checkIn,checkOut,price);
-            Guest guest = GuestModel.search(res.getGuestId());
+            GuestDTO guestDTO = GuestDAOImpl.search(res.getGuestId());
             Double finalAmmount = orderAm+roomPrice;
-            fillResFields(res,orderAm,finalAmmount,guest);
+            fillResFields(res,orderAm,finalAmmount, guestDTO);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -164,10 +164,10 @@ public class PaymentFormController {
     }
 
     @FXML
-    public void fillResFields(Booking res, Double orderAm, Double finalAmmount, Guest guest) {
+    public void fillResFields(BookingDTO res, Double orderAm, Double finalAmmount, GuestDTO guestDTO) {
         lblGuestId.setText(res.getGuestId());
         lblRoomId.setText(res.getRoomId());
-        lblName.setText(guest.getName());
+        lblName.setText(guestDTO.getName());
         lblCheckIn.setText(res.getCheckIn());
         lblCheckOut.setText(res.getCheckOut());
         lblAmount.setText(String.valueOf(orderAm));
@@ -184,7 +184,7 @@ public class PaymentFormController {
     public Double getOrderAmmount(String code) {
         Double orderAmmount = 0.0;
         try {
-            orderAmmount = PlaceOrderModel.getOrderAm(code);
+            orderAmmount = PlaceOrderDAOImpl.getOrderAm(code);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -196,7 +196,7 @@ public class PaymentFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String paymentId = txtPaymentId.getText();
         try {
-            boolean isDeleted = PaymentModel.delete(paymentId);
+            boolean isDeleted = PaymentDAOImpl.delete(paymentId);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment Deleted!").show();
                 clearTxt();
@@ -222,9 +222,9 @@ public class PaymentFormController {
         Double ordersAm = Double.valueOf(lblAmount.getText());
         Double totalPrice = Double.valueOf(lblPrice.getText());
 
-        Payment payment = new Payment(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
+        PaymentDTO paymentDTO = new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
         try {
-            boolean isUpdated = PaymentModel.update(payment);
+            boolean isUpdated = PaymentDAOImpl.update(paymentDTO);
             if(isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment updated!").show();
                 getAll();
@@ -251,12 +251,12 @@ public class PaymentFormController {
         Double totalPrice = Double.valueOf(lblPrice.getText());
         String release = "Available";
 
-        Payment payment = new Payment(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
+        PaymentDTO paymentDTO = new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
         try {
-            boolean isSaved = PaymentModel.add(payment);
+            boolean isSaved = PaymentDAOImpl.add(paymentDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment saved!").show();
-                RoomModel.releaseRoom(roomId,release);
+                RoomDAOImpl.releaseRoom(roomId,release);
                 getAll();
                 setValueFactory();
 

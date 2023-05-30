@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Room;
-import lk.ijse.hotel.dto.tm.RoomTM;
-import lk.ijse.hotel.model.RoomModel;
+import lk.ijse.hotel.dto.RoomDTO;
+import lk.ijse.hotel.tm.RoomTM;
+import lk.ijse.hotel.dao.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,14 +60,14 @@ public class RoomFormController {
     private void getAll() {
         try {
             ObservableList<RoomTM> obList = FXCollections.observableArrayList();
-            List<Room> roomList = RoomModel.getAll();
+            List<RoomDTO> roomDTOList = RoomDAOImpl.getAll();
 
-            for (Room room : roomList) {
+            for (RoomDTO roomDTO : roomDTOList) {
                 obList.add(new RoomTM(
-                        room.getId(),
-                        room.getDetails(),
-                        room.getRoomType(),
-                        room.getPrice()
+                        roomDTO.getId(),
+                        roomDTO.getDetails(),
+                        roomDTO.getRoomType(),
+                        roomDTO.getPrice()
                 ));
             }
             tblRoom.setItems(obList);
@@ -98,7 +98,7 @@ public class RoomFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
         String id = txtId.getText();
         try {
-            boolean isDeleted = RoomModel.delete(id);
+            boolean isDeleted = RoomDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -115,7 +115,7 @@ public class RoomFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = RoomModel.update(id, details, roomType, price);
+            boolean isUpdated = RoomDAOImpl.update(id, details, roomType, price);
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Room updated!").show();
                 getAll();
@@ -139,8 +139,8 @@ public class RoomFormController {
             // Validate room ID
             validateRoomId(id);
 
-            Room room = new Room(id, details, roomType, price);
-            boolean isSaved = RoomModel.add(room);
+            RoomDTO roomDTO = new RoomDTO(id, details, roomType, price);
+            boolean isSaved = RoomDAOImpl.add(roomDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Room saved!").show();
                 getAll();
@@ -176,12 +176,12 @@ public class RoomFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Room room = RoomModel.search(txtId.getText());
-            if (room != null) {
-                txtId.setText(room.getId());
-                txtDetails.setText(room.getDetails());
-                txtRoomType.setText(room.getRoomType());
-                txtPrice.setText(String.valueOf(room.getPrice()));
+            RoomDTO roomDTO = RoomDAOImpl.search(txtId.getText());
+            if (roomDTO != null) {
+                txtId.setText(roomDTO.getId());
+                txtDetails.setText(roomDTO.getDetails());
+                txtRoomType.setText(roomDTO.getRoomType());
+                txtPrice.setText(String.valueOf(roomDTO.getPrice()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

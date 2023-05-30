@@ -3,7 +3,6 @@ package lk.ijse.hotel.controller;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -13,15 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Booking;
-import lk.ijse.hotel.dto.Food;
-import lk.ijse.hotel.dto.Guest;
-import lk.ijse.hotel.dto.OrderDetails;
-import lk.ijse.hotel.dto.tm.OrderTM;
-import lk.ijse.hotel.model.BookingModel;
-import lk.ijse.hotel.model.FoodModel;
-import lk.ijse.hotel.model.GuestModel;
-import lk.ijse.hotel.model.OrderModel;
+import lk.ijse.hotel.dto.BookingDTO;
+import lk.ijse.hotel.dto.FoodDTO;
+import lk.ijse.hotel.dto.GuestDTO;
+import lk.ijse.hotel.dto.OrderDetailsDTO;
+import lk.ijse.hotel.tm.OrderTM;
+import lk.ijse.hotel.dao.OrderDAOImpl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -196,12 +192,12 @@ public class OrderFormController implements Initializable {
         String oId = txtOrderId.getText();
         String cusId = cmbBookingId.getValue();
 
-        List<OrderDetails> cartDTOList = new ArrayList<>();
+        List<OrderDetailsDTO> cartDTOList = new ArrayList<>();
 
         for (int i = 0; i < tblOrder.getItems().size(); i++) {
             OrderTM orderTM = obList.get(i);
 
-            OrderDetails dto = new OrderDetails(
+            OrderDetailsDTO dto = new OrderDetailsDTO(
                     orderTM.getOrderID(),
                     orderTM.getFoodID(),
                     orderTM.getQty(),
@@ -213,7 +209,7 @@ public class OrderFormController implements Initializable {
         String date = lblOrderDate.getText();
         boolean isPlaced = false;
         try {
-            isPlaced = OrderModel.placeOrder(cartDTOList,oId,cusId);
+            isPlaced = OrderDAOImpl.placeOrder(cartDTOList,oId,cusId);
             if(isPlaced) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Order Placed").show();
                 obList.clear();
@@ -254,17 +250,17 @@ public class OrderFormController implements Initializable {
         }
     }
 
-    private void fillMealFields(Food food) {
-        lblFoodName.setText(food.getName());
-        lblPrice.setText(String.valueOf(food.getPrice()));
+    private void fillMealFields(FoodDTO foodDTO) {
+        lblFoodName.setText(foodDTO.getName());
+        lblPrice.setText(String.valueOf(foodDTO.getPrice()));
     }
 
     public void bookIdOnAction(ActionEvent actionEvent) {
         String code = cmbBookingId.getValue();
         try {
-            Booking res = BookingModel.searchById(code);
+            BookingDTO res = BookingModel.searchById(code);
             String cod = res.getGuestId();
-            Guest ges = GuestModel.search(cod);
+            GuestDTO ges = GuestModel.search(cod);
             String gesCode = ges.getName();
             fillBookFields(res,gesCode);
 
@@ -275,7 +271,7 @@ public class OrderFormController implements Initializable {
         }
     }
 
-    private void fillBookFields(Booking res, String gesCode) {
+    private void fillBookFields(BookingDTO res, String gesCode) {
         lblGuestId.setText(res.getGuestId());
         lblRoomId.setText(res.getRoomId());
         lblName.setText(gesCode);
@@ -284,8 +280,8 @@ public class OrderFormController implements Initializable {
     public void foodIdOnAction(ActionEvent actionEvent) {
         String code = cmbFoodId.getValue();
         try {
-            Food food = FoodModel.searchById(code);
-            fillMealFields(food);
+            FoodDTO foodDTO = FoodModel.searchById(code);
+            fillMealFields(foodDTO);
 
             txtQty.requestFocus();
         } catch (SQLException e) {

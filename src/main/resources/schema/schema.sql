@@ -4,7 +4,7 @@ create database hotelManagementSystem;
 
 use hotelManagementSystem;
 
-create table user(
+create table userDTO(
                      userId VARCHAR(6) NOT NULL,
                      userName VARCHAR(30) NOT NULL,
                      password VARCHAR(10) NOT NULL,
@@ -12,7 +12,7 @@ create table user(
                      CONSTRAINT PRIMARY KEY (userId)
 );
 
-create table employee(
+create table employeeDTO(
                          userId VARCHAR(6) NOT NULL,
                          empId VARCHAR(6) NOT NULL,
                          empName VARCHAR(30),
@@ -21,10 +21,10 @@ create table employee(
                          nic VARCHAR(15),
                          address VARCHAR(20),
                          CONSTRAINT PRIMARY KEY (empId),
-                         CONSTRAINT FOREIGN KEY(userId) REFERENCES user(userId) on Delete Cascade on Update Cascade
+                         CONSTRAINT FOREIGN KEY(userId) REFERENCES userDTO(userId) on Delete Cascade on Update Cascade
 );
 
-create table schedule(
+create table scheduleDTO(
                          scheduleId VARCHAR(6) NOT NULL,
                          scheduleDetails VARCHAR(255),
                          CONSTRAINT PRIMARY KEY (scheduleId)
@@ -35,11 +35,11 @@ CREATE TABLE scheduleDetail(
                                empId VARCHAR(6) NOT NULL,
                                date DATE,
                                CONSTRAINT PRIMARY KEY (scheduleId,empId),
-                               CONSTRAINT FOREIGN KEY (scheduleId) REFERENCES schedule(scheduleId) on Delete Cascade on Update Cascade,
-                               CONSTRAINT FOREIGN KEY (empId) REFERENCES employee(empId) on Delete Cascade on Update Cascade
+                               CONSTRAINT FOREIGN KEY (scheduleId) REFERENCES scheduleDTO(scheduleId) on Delete Cascade on Update Cascade,
+                               CONSTRAINT FOREIGN KEY (empId) REFERENCES employeeDTO(empId) on Delete Cascade on Update Cascade
 );
 
-create table guest(
+create table guestDTO(
                       userId VARCHAR(6) NOT NULL,
                       guestId VARCHAR(6) NOT NULL,
                       guestName VARCHAR(30),
@@ -48,12 +48,12 @@ create table guest(
                       guestZipcode VARCHAR(15),
                       guestPassportId VARCHAR(20),
                       CONSTRAINT PRIMARY KEY (guestId),
-                      CONSTRAINT FOREIGN KEY(userId) REFERENCES user(userId) on Delete Cascade on Update Cascade
+                      CONSTRAINT FOREIGN KEY(userId) REFERENCES userDTO(userId) on Delete Cascade on Update Cascade
 );
 
 
 
-create table room(
+create table roomDTO(
                      roomId VARCHAR(6) NOT NULL,
                      roomDetails VARCHAR(255),
                      roomType VARCHAR(200),
@@ -61,7 +61,7 @@ create table room(
                      CONSTRAINT PRIMARY KEY (roomId)
 );
 
-create table booking(
+create table bookingDTO(
                         guestId VARCHAR(6) NOT NULL,
                         bookingId VARCHAR(6) NOT NULL,
                         bookingDate DATE,
@@ -69,11 +69,11 @@ create table booking(
                         checkIn DATE,
                         checkOut DATE,
                         CONSTRAINT PRIMARY KEY (bookingId),
-                        CONSTRAINT FOREIGN KEY(guestId) REFERENCES guest(guestId) on Delete Cascade on Update Cascade,
-                        CONSTRAINT FOREIGN KEY(roomId) REFERENCES room(roomId) on Delete Cascade on Update Cascade
+                        CONSTRAINT FOREIGN KEY(guestId) REFERENCES guestDTO(guestId) on Delete Cascade on Update Cascade,
+                        CONSTRAINT FOREIGN KEY(roomId) REFERENCES roomDTO(roomId) on Delete Cascade on Update Cascade
 );
 
-create table tour(
+create table tourDTO(
                      tourId VARCHAR(6) NOT NULL,
                      tourName VARCHAR(30),
                      tourDetails VARCHAR(255),
@@ -87,11 +87,11 @@ CREATE TABLE tourDetail(
                            amount INT(11),
                            date DATE,
                            CONSTRAINT PRIMARY KEY (bookingId,tourId),
-                           CONSTRAINT FOREIGN KEY (bookingId) REFERENCES booking(bookingId) on Delete Cascade on Update Cascade,
-                           CONSTRAINT FOREIGN KEY (tourId) REFERENCES tour(tourId) on Delete Cascade on Update Cascade
+                           CONSTRAINT FOREIGN KEY (bookingId) REFERENCES bookingDTO(bookingId) on Delete Cascade on Update Cascade,
+                           CONSTRAINT FOREIGN KEY (tourId) REFERENCES tourDTO(tourId) on Delete Cascade on Update Cascade
 );
 
-create table food(
+create table foodDTO(
                      foodId VARCHAR(6) NOT NULL,
                      foodName VARCHAR(100),
                      foodDetails VARCHAR(255),
@@ -103,7 +103,7 @@ CREATE TABLE foodOrders(
                            date DATE,
                            bookingId VARCHAR(6) NOT NULL,
                            CONSTRAINT PRIMARY KEY (orderId),
-                           CONSTRAINT FOREIGN KEY(bookingId) REFERENCES booking(bookingId) on Delete Cascade on Update Cascade
+                           CONSTRAINT FOREIGN KEY(bookingId) REFERENCES bookingDTO(bookingId) on Delete Cascade on Update Cascade
 );
 
 CREATE TABLE foodOrderDetail(
@@ -114,11 +114,11 @@ CREATE TABLE foodOrderDetail(
                                 date DATE,
                                 CONSTRAINT PRIMARY KEY (orderId),
                                 CONSTRAINT FOREIGN KEY (orderId) REFERENCES foodOrders(orderId) on Delete Cascade on Update Cascade,
-                                CONSTRAINT FOREIGN KEY (foodId) REFERENCES food(foodId) on Delete Cascade on Update Cascade
+                                CONSTRAINT FOREIGN KEY (foodId) REFERENCES foodDTO(foodId) on Delete Cascade on Update Cascade
 );
 
 
-create table payment(
+create table paymentDTO(
                         paymentId VARCHAR(20) NOT NULL,
                         guestId VARCHAR(30) NOT NULL,
                         guestName VARCHAR(30),
@@ -129,12 +129,12 @@ create table payment(
                         ordersAmount DECIMAL(10,2),
                         totalPrice DECIMAL(10,2),
                         CONSTRAINT PRIMARY KEY (paymentId),
-                        CONSTRAINT FOREIGN KEY (guestId) REFERENCES guest (guestId) ON Delete Cascade On update cascade,
-                        CONSTRAINT FOREIGN KEY (bookingId)  REFERENCES booking (bookingId) ON Delete Cascade On update cascade,
-                        CONSTRAINT FOREIGN KEY (roomId) REFERENCES room (roomId) ON Delete Cascade On update cascade
+                        CONSTRAINT FOREIGN KEY (guestId) REFERENCES guestDTO (guestId) ON Delete Cascade On update cascade,
+                        CONSTRAINT FOREIGN KEY (bookingId)  REFERENCES bookingDTO (bookingId) ON Delete Cascade On update cascade,
+                        CONSTRAINT FOREIGN KEY (roomId) REFERENCES roomDTO (roomId) ON Delete Cascade On update cascade
 );
 
-create table supplier(
+create table supplierDTO(
                          supId VARCHAR(6) NOT NULL,
                          supName VARCHAR(30),
                          supContact VARCHAR(15),
@@ -142,7 +142,7 @@ create table supplier(
                          CONSTRAINT PRIMARY KEY (supId)
 );
 
-create table inventory(
+create table inventoryDTO(
                           itemId VARCHAR(6) NOT NULL,
                           itemName VARCHAR(30),
                           itemDetails VARCHAR(255),
@@ -155,6 +155,6 @@ CREATE TABLE supplyDetail(
                              itemId VARCHAR(6) NOT NULL,
                              date DATE,
                              CONSTRAINT PRIMARY KEY (supId,itemId),
-                             CONSTRAINT FOREIGN KEY (supId) REFERENCES supplier(supId) on Delete Cascade on Update Cascade,
-                             CONSTRAINT FOREIGN KEY (itemId) REFERENCES inventory(itemId) on Delete Cascade on Update Cascade
+                             CONSTRAINT FOREIGN KEY (supId) REFERENCES supplierDTO(supId) on Delete Cascade on Update Cascade,
+                             CONSTRAINT FOREIGN KEY (itemId) REFERENCES inventoryDTO(itemId) on Delete Cascade on Update Cascade
 );

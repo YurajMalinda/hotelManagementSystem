@@ -4,57 +4,57 @@
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
 	<queryString language="SQL">
-		<![CDATA[select payment.paymentId, payment.bookingId, payment.guestId, payment.guestName, payment.roomId, room.roomType, payment.checkInDate, payment.checkOutDate, payment.ordersAmount, payment.totalPrice FROM payment INNER JOIN guest ON payment.guestId=guest.guestId INNER JOIN booking ON payment.bookingId=booking.bookingId INNER JOIN room ON payment.roomId=room.roomId WHERE paymentId="P001";]]>
+		<![CDATA[select paymentDTO.paymentId, paymentDTO.bookingId, paymentDTO.guestId, paymentDTO.guestName, paymentDTO.roomId, roomDTO.roomType, paymentDTO.checkInDate, paymentDTO.checkOutDate, paymentDTO.ordersAmount, paymentDTO.totalPrice FROM paymentDTO INNER JOIN guestDTO ON paymentDTO.guestId=guestDTO.guestId INNER JOIN bookingDTO ON paymentDTO.bookingId=bookingDTO.bookingId INNER JOIN roomDTO ON paymentDTO.roomId=roomDTO.roomId WHERE paymentId="P001";]]>
 	</queryString>
 	<field name="paymentId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="paymentId"/>
 		<property name="com.jaspersoft.studio.field.label" value="paymentId"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="bookingId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="bookingId"/>
 		<property name="com.jaspersoft.studio.field.label" value="bookingId"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="guestId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="guestId"/>
 		<property name="com.jaspersoft.studio.field.label" value="guestId"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="guestName" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="guestName"/>
 		<property name="com.jaspersoft.studio.field.label" value="guestName"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="roomId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="roomId"/>
 		<property name="com.jaspersoft.studio.field.label" value="roomId"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="roomType" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="roomType"/>
 		<property name="com.jaspersoft.studio.field.label" value="roomType"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="room"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="roomDTO"/>
 	</field>
 	<field name="checkInDate" class="java.sql.Date">
 		<property name="com.jaspersoft.studio.field.name" value="checkInDate"/>
 		<property name="com.jaspersoft.studio.field.label" value="checkInDate"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="checkOutDate" class="java.sql.Date">
 		<property name="com.jaspersoft.studio.field.name" value="checkOutDate"/>
 		<property name="com.jaspersoft.studio.field.label" value="checkOutDate"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="ordersAmount" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="ordersAmount"/>
 		<property name="com.jaspersoft.studio.field.label" value="ordersAmount"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<field name="totalPrice" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="totalPrice"/>
 		<property name="com.jaspersoft.studio.field.label" value="totalPrice"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="payment"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="paymentDTO"/>
 	</field>
 	<group name="paymentId">
 		<groupExpression><![CDATA[$F{paymentId}]]></groupExpression>

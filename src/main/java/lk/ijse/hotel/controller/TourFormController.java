@@ -11,9 +11,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Tour;
-import lk.ijse.hotel.dto.tm.TourTM;
-import lk.ijse.hotel.model.TourModel;
+import lk.ijse.hotel.dto.TourDTO;
+import lk.ijse.hotel.tm.TourTM;
+import lk.ijse.hotel.dao.TourDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -60,14 +60,14 @@ public class TourFormController {
     private void getAll() {
         try {
             ObservableList<TourTM> obList = FXCollections.observableArrayList();
-            List<Tour> tourList = TourModel.getAll();
+            List<TourDTO> tourDTOList = TourDAOImpl.getAll();
 
-            for (Tour tour : tourList) {
+            for (TourDTO tourDTO : tourDTOList) {
                 obList.add(new TourTM(
-                        tour.getId(),
-                        tour.getName(),
-                        tour.getDetails(),
-                        tour.getPrice()
+                        tourDTO.getId(),
+                        tourDTO.getName(),
+                        tourDTO.getDetails(),
+                        tourDTO.getPrice()
                 ));
             }
             tblTour.setItems(obList);
@@ -98,7 +98,7 @@ public class TourFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = TourModel.delete(id);
+            boolean isDeleted = TourDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -116,7 +116,7 @@ public class TourFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = TourModel.update(id, name, details, price);
+            boolean isUpdated = TourDAOImpl.update(id, name, details, price);
             if (isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour updated!").show();
                 getAll();
@@ -141,8 +141,8 @@ public class TourFormController {
             // Validate Tour ID
             validateTourId(id);
 
-            Tour tour = new Tour(id, name, details, price);
-            boolean isSaved = TourModel.add(tour);
+            TourDTO tourDTO = new TourDTO(id, name, details, price);
+            boolean isSaved = TourDAOImpl.add(tourDTO);
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour saved!").show();
                 getAll();
@@ -178,12 +178,12 @@ public class TourFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            Tour tour = TourModel.search(txtId.getText());
-            if (tour != null) {
-                txtId.setText(tour.getId());
-                txtName.setText(tour.getName());
-                txtDetails.setText(tour.getDetails());
-                txtPrice.setText(String.valueOf(tour.getPrice()));
+            TourDTO tourDTO = TourDAOImpl.search(txtId.getText());
+            if (tourDTO != null) {
+                txtId.setText(tourDTO.getId());
+                txtName.setText(tourDTO.getName());
+                txtDetails.setText(tourDTO.getDetails());
+                txtPrice.setText(String.valueOf(tourDTO.getPrice()));
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();

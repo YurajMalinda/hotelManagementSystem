@@ -10,9 +10,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dto.Schedule;
-import lk.ijse.hotel.dto.tm.ScheduleTM;
-import lk.ijse.hotel.model.ScheduleModel;
+import lk.ijse.hotel.dto.ScheduleDTO;
+import lk.ijse.hotel.tm.ScheduleTM;
+import lk.ijse.hotel.dao.ScheduleDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -49,12 +49,12 @@ public class ScheduleFormController {
     private void getAll () {
         try {
             ObservableList<ScheduleTM> obList = FXCollections.observableArrayList();
-            List<Schedule> scheduleList = ScheduleModel.getAll();
+            List<ScheduleDTO> scheduleDTOList = ScheduleDAOImpl.getAll();
 
-            for (Schedule schedule : scheduleList) {
+            for (ScheduleDTO scheduleDTO : scheduleDTOList) {
                 obList.add(new ScheduleTM(
-                        schedule.getId(),
-                        schedule.getDetails()
+                        scheduleDTO.getId(),
+                        scheduleDTO.getDetails()
                 ));
             }
             tblSchedule.setItems(obList);
@@ -85,7 +85,7 @@ public class ScheduleFormController {
         public void btnDeleteOnAction (ActionEvent actionEvent){
             String id = txtId.getText();
             try {
-                boolean isDeleted = ScheduleModel.delete(id);
+                boolean isDeleted = ScheduleDAOImpl.delete(id);
                 if (isDeleted) {
                     new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                     getAll();
@@ -106,7 +106,7 @@ public class ScheduleFormController {
                 // Validate schedule ID
                 validateScheduleId(id);
 
-                boolean isUpdated = ScheduleModel.update(id, details);
+                boolean isUpdated = ScheduleDAOImpl.update(id, details);
                 if(isUpdated) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
                     getAll();
@@ -130,10 +130,10 @@ public class ScheduleFormController {
                 // Validate schedule ID
                 validateScheduleId(id);
 
-                Schedule schedule = new Schedule(id, details);
+                ScheduleDTO scheduleDTO = new ScheduleDTO(id, details);
 
                 // Save booking to database
-                boolean isSaved = ScheduleModel.add(schedule);
+                boolean isSaved = ScheduleDAOImpl.add(scheduleDTO);
                 if (isSaved) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
                     getAll();
@@ -167,10 +167,10 @@ public class ScheduleFormController {
 
         public void codeSearchOnAction (ActionEvent actionEvent){
             try {
-                Schedule schedule = ScheduleModel.search(txtId.getText());
-                if (schedule != null) {
-                    txtId.setText(schedule.getId());
-                    txtDetails.setText(schedule.getDetails());
+                ScheduleDTO scheduleDTO = ScheduleDAOImpl.search(txtId.getText());
+                if (scheduleDTO != null) {
+                    txtId.setText(scheduleDTO.getId());
+                    txtDetails.setText(scheduleDTO.getDetails());
                 }
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "something happened!").show();
