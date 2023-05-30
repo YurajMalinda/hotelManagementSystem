@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class scheduleFormController {
+public class ScheduleFormController {
     public AnchorPane schedulePane;
     public TableView <ScheduleTM>tblSchedule;
     public TableColumn colId;
