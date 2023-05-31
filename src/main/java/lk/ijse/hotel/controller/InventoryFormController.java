@@ -13,7 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.InventoryDAOImpl;
 import lk.ijse.hotel.dto.InventoryDTO;
-import lk.ijse.hotel.tm.InventoryTM;
+import lk.ijse.hotel.view.tdm.InventoryTM;
 
 import java.io.IOException;
 import java.sql.SQLException;

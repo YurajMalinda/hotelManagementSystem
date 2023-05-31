@@ -1,4 +1,4 @@
-package lk.ijse.hotel.tm;
+package lk.ijse.hotel.view.tdm;
 
 import lombok.*;
 

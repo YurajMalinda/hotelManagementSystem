@@ -13,7 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.FoodDAOImpl;
 import lk.ijse.hotel.dto.FoodDTO;
-import lk.ijse.hotel.tm.FoodTM;
+import lk.ijse.hotel.view.tdm.FoodTM;
 
 import java.io.IOException;
 import java.sql.SQLException;

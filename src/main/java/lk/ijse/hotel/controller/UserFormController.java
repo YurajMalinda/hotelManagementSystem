@@ -14,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.UserDTO;
-import lk.ijse.hotel.tm.UserTM;
+import lk.ijse.hotel.view.tdm.UserTM;
 import lk.ijse.hotel.dao.UserDAOImpl;
 
 import java.io.IOException;

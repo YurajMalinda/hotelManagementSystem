@@ -13,7 +13,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.EmployeeDAOImpl;
 import lk.ijse.hotel.dto.EmployeeDTO;
-import lk.ijse.hotel.tm.EmployeeTM;
+import lk.ijse.hotel.view.tdm.EmployeeTM;
 
 
 import java.io.IOException;

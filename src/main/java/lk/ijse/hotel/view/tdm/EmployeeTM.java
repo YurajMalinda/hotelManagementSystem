@@ -1,4 +1,4 @@
-package lk.ijse.hotel.tm;
+package lk.ijse.hotel.view.tdm;
 
 import lombok.*;
 
@@ -7,12 +7,13 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class GuestTM {
+
+public class EmployeeTM {
     private String userId;
     private String id;
     private String name;
     private String gender;
-    private String country;
-    private String zipCode;
-    private String passportId;
+    private String email;
+    private String nic;
+    private String address;
 }

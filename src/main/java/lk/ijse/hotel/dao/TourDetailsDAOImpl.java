@@ -1,7 +1,7 @@
 package lk.ijse.hotel.dao;
 
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.tm.TourDetail;
+import lk.ijse.hotel.view.tdm.TourDetail;
 import lk.ijse.hotel.util.CrudUtil;
 
 import java.sql.Connection;

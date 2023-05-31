@@ -1,4 +1,4 @@
-package lk.ijse.hotel.tm;
+package lk.ijse.hotel.view.tdm;
 
 import lombok.*;
 @NoArgsConstructor
@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @ToString
 
-public class TourDetailTM {
+public class TourDetail {
     private String bookingId;
     private String tourId;
     private String amount;

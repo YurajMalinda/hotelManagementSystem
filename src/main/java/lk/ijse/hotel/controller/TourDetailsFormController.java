@@ -13,8 +13,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.TourDAOImpl;
 import lk.ijse.hotel.dao.TourDetailsDAOImpl;
-import lk.ijse.hotel.tm.TourDetail;
-import lk.ijse.hotel.tm.TourDetailTM;
+import lk.ijse.hotel.view.tdm.TourDetail;
+import lk.ijse.hotel.view.tdm.TourDetailTM;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -12,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.TourDTO;
-import lk.ijse.hotel.tm.TourTM;
+import lk.ijse.hotel.view.tdm.TourTM;
 import lk.ijse.hotel.dao.TourDAOImpl;
 
 import java.io.IOException;

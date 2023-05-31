@@ -17,7 +17,7 @@ import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.dto.PaymentDTO;
 import lk.ijse.hotel.dto.RoomDTO;
-import lk.ijse.hotel.tm.PaymentTM;
+import lk.ijse.hotel.view.tdm.PaymentTM;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;

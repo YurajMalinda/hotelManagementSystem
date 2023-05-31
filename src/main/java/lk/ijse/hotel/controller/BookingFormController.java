@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import lk.ijse.hotel.dao.BookingDAOImpl;
 import lk.ijse.hotel.dao.GuestDAOImpl;
 import lk.ijse.hotel.dto.BookingDTO;
-import lk.ijse.hotel.tm.BookingTM;
+import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.dao.RoomDAOImpl;
 
 import java.io.IOException;

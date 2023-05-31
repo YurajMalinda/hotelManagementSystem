@@ -1,4 +1,4 @@
-package lk.ijse.hotel.tm;
+package lk.ijse.hotel.view.tdm;
 
 import lombok.*;
 
@@ -8,7 +8,9 @@ import lombok.*;
 @Setter
 @ToString
 
-public class ScheduleTM {
+public class FoodTM {
     private String id;
+    private String name;
     private String details;
+    private Double price;
 }

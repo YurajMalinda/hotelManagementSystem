@@ -11,7 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.ScheduleDTO;
-import lk.ijse.hotel.tm.ScheduleTM;
+import lk.ijse.hotel.view.tdm.ScheduleTM;
 import lk.ijse.hotel.dao.ScheduleDAOImpl;
 
 import java.io.IOException;

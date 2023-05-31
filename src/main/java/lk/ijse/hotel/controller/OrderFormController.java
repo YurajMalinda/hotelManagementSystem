@@ -16,7 +16,7 @@ import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.FoodDTO;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.dto.OrderDetailsDTO;
-import lk.ijse.hotel.tm.OrderTM;
+import lk.ijse.hotel.view.tdm.OrderTM;
 import lk.ijse.hotel.dao.OrderDAOImpl;
 
 import java.io.IOException;
