@@ -14,7 +14,7 @@
    <children>
       <ImageView fitHeight="681.0" fitWidth="914.0" opacity="0.64">
          <image>
-            <Image url="@../../../../../view/image/hotel.jpg" />
+            <Image url="@assests/image/hotel.jpg" />
          </image>
       </ImageView>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#778fa4" height="681.0" layoutX="581.0" opacity="0.32" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="333.0" />
@@ -134,7 +134,7 @@
          </font></Label>
    </children>
    <stylesheets>
-      <URL value="@../../../../../view/style/CrudFrom.css" />
-      <URL value="@../../../../../view/style/From.css" />
+      <URL value="@assests/style/CrudFrom.css" />
+      <URL value="@assests/style/From.css" />
    </stylesheets>
 </AnchorPane>

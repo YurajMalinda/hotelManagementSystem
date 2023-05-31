@@ -58,7 +58,7 @@
       <TextField fx:id="txtTitle" focusTraversable="false" layoutX="196.0" layoutY="262.0" />
     </children>
     <stylesheets>
-        <URL value="@../../../../../view/style/CrudFrom.css" />
-        <URL value="@../../../../../view/style/From.css" />
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
     </stylesheets>
 </AnchorPane>

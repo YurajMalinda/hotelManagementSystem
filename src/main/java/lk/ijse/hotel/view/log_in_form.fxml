@@ -17,7 +17,7 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#898a89" height="484.0" layoutX="153.0" layoutY="90.0" opacity="0.39" stroke="BLACK" strokeType="INSIDE" strokeWidth="5.0" width="609.0" />
         <ImageView fitHeight="671.0" fitWidth="914.0" layoutX="-3.0" opacity="0.25">
             <image>
-                <Image url="@../../../../../view/image/hotel.jpg" />
+                <Image url="@assests/image/hotel.jpg" />
             </image>
         </ImageView>
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="358.0" layoutX="273.0" layoutY="149.0" stroke="#a9c6b1" strokeType="INSIDE" strokeWidth="2.0" width="368.0" />
@@ -51,7 +51,7 @@
       <ComboBox fx:id="cmbTitle" layoutX="426.0" layoutY="243.0" prefHeight="31.0" prefWidth="187.0" />
     </children>
     <stylesheets>
-        <URL value="@../../../../../view/style/CrudFrom.css" />
-        <URL value="@../../../../../view/style/From.css" />
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
     </stylesheets>
 </AnchorPane>

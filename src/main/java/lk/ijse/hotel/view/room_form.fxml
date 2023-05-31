@@ -57,7 +57,7 @@
       <TextField fx:id="txtDetails" focusTraversable="false" layoutX="193.0" layoutY="111.0" prefHeight="37.0" prefWidth="213.0" />
    </children>
    <stylesheets>
-      <URL value="@../../../../../view/style/CrudFrom.css" />
-      <URL value="@../../../../../view/style/From.css" />
+      <URL value="@assests/style/CrudFrom.css" />
+      <URL value="@assests/style/From.css" />
    </stylesheets>
 </AnchorPane>

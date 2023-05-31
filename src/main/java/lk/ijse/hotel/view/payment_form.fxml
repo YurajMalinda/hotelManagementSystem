@@ -92,7 +92,7 @@
       <Label fx:id="lblCheckOut" focusTraversable="false" layoutX="197.0" layoutY="224.0" prefHeight="31.0" prefWidth="187.0" />
     </children>
     <stylesheets>
-        <URL value="@../../../../../view/style/CrudFrom.css" />
-        <URL value="@../../../../../view/style/From.css" />
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
     </stylesheets>
 </AnchorPane>
