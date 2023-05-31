@@ -107,7 +107,7 @@
          </font></JFXButton>
     </children>
     <stylesheets>
-        <URL value="@../style/CrudFrom.css" />
-        <URL value="@../style/From.css" />
+        <URL value="@../../../../../view/style/CrudFrom.css" />
+        <URL value="@../../../../../view/style/From.css" />
     </stylesheets>
 </AnchorPane>

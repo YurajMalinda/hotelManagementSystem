@@ -80,14 +80,14 @@ public class FoodFormController {
 
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1) {
-            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) foodPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else{
-            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) foodPane.getScene().getWindow();
             stage.setTitle("Dashboard");

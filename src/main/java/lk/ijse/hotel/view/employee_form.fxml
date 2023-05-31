@@ -83,7 +83,7 @@
       <CheckBox fx:id="chkFemale" focusTraversable="false" layoutX="268.0" layoutY="187.0" mnemonicParsing="false" styleClass="text-field" text="Female" />
     </children>
     <stylesheets>
-        <URL value="@../style/CrudFrom.css" />
-        <URL value="@../style/From.css" />
+        <URL value="@../../../../../view/style/CrudFrom.css" />
+        <URL value="@../../../../../view/style/From.css" />
     </stylesheets>
 </AnchorPane>

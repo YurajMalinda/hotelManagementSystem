@@ -106,14 +106,14 @@ public class GuestFormController {
 
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1) {
-            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) guestPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else if(BackButtonController.backButton == 0){
-            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) guestPane.getScene().getWindow();
             stage.setTitle("Dashboard");
