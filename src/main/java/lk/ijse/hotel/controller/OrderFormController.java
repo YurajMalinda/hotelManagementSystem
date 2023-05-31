@@ -12,6 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.BookingDAOImpl;
+import lk.ijse.hotel.dao.FoodDAOImpl;
+import lk.ijse.hotel.dao.GuestDAOImpl;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.FoodDTO;
 import lk.ijse.hotel.dto.GuestDTO;
@@ -224,7 +227,7 @@ public class OrderFormController implements Initializable {
     private void loadBookingIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = BookingModel.loadIds();
+            List<String> ids = BookingDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
@@ -238,7 +241,7 @@ public class OrderFormController implements Initializable {
     private void loadFoodIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = FoodModel.loadIds();
+            List<String> ids = FoodDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
@@ -258,9 +261,9 @@ public class OrderFormController implements Initializable {
     public void bookIdOnAction(ActionEvent actionEvent) {
         String code = cmbBookingId.getValue();
         try {
-            BookingDTO res = BookingModel.searchById(code);
+            BookingDTO res = BookingDAOImpl.searchById(code);
             String cod = res.getGuestId();
-            GuestDTO ges = GuestModel.search(cod);
+            GuestDTO ges = GuestDAOImpl.search(cod);
             String gesCode = ges.getName();
             fillBookFields(res,gesCode);
 
@@ -280,7 +283,7 @@ public class OrderFormController implements Initializable {
     public void foodIdOnAction(ActionEvent actionEvent) {
         String code = cmbFoodId.getValue();
         try {
-            FoodDTO foodDTO = FoodModel.searchById(code);
+            FoodDTO foodDTO = FoodDAOImpl.searchById(code);
             fillMealFields(foodDTO);
 
             txtQty.requestFocus();

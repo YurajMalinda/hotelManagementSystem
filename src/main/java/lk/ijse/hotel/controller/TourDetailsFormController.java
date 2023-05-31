@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.BookingDAOImpl;
 import lk.ijse.hotel.dao.TourDAOImpl;
 import lk.ijse.hotel.dao.TourDetailsDAOImpl;
 import lk.ijse.hotel.view.tdm.TourDetail;
@@ -56,7 +57,7 @@ public class TourDetailsFormController {
     private void loadBookingIds() {
         try {
             ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = BookingModel.loadIds();
+            List<String> ids = BookingDAOImpl.loadIds();
 
             for (String id : ids) {
                 obList.add(id);
