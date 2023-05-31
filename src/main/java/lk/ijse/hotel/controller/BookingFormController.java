@@ -12,11 +12,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.BookingDAOImpl;
-import lk.ijse.hotel.dao.GuestDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.view.tdm.BookingTM;
-import lk.ijse.hotel.dao.RoomDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;

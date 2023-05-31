@@ -12,7 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.ScheduleDTO;
 import lk.ijse.hotel.view.tdm.ScheduleTM;
-import lk.ijse.hotel.dao.ScheduleDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.ScheduleDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;

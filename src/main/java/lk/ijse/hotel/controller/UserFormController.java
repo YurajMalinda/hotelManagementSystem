@@ -15,7 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.UserDTO;
 import lk.ijse.hotel.view.tdm.UserTM;
-import lk.ijse.hotel.dao.UserDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.UserDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;

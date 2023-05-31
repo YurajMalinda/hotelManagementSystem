@@ -11,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.*;
+import lk.ijse.hotel.dao.custom.impl.*;
 import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.GuestDTO;

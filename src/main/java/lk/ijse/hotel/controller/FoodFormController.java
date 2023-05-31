@@ -11,7 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.FoodDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.FoodDAOImpl;
 import lk.ijse.hotel.dto.FoodDTO;
 import lk.ijse.hotel.view.tdm.FoodTM;
 

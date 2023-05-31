@@ -11,7 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dao.LoginDAOImpl;
+import lk.ijse.hotel.dao.custom.impl.LoginDAOImpl;
 
 import java.io.IOException;
 import java.sql.Connection;
