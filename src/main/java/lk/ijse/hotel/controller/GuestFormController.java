@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,12 +12,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.CrudDAO;
 import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.view.tdm.GuestTM;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GuestFormController {
@@ -37,14 +41,45 @@ public class GuestFormController {
     public TableColumn colPassportId;
     public CheckBox checkMale;
     public CheckBox checkFemale;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
 
     @FXML
     private AnchorPane guestPane;
+
+    CrudDAO crudDAO = new GuestDAOImpl();
 
     public void initialize() {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtUser.clear();
+        txtPassportId.clear();
+        txtZipcode.clear();
+        txtCountry.clear();
+        checkFemale.setSelected(false);
+        checkMale.setSelected(false);
+        txtName.clear();
+        txtId.setDisable(true);
+        txtId.setEditable(false);
+        txtUser.setDisable(true);
+        txtPassportId.setDisable(true);
+        txtZipcode.setDisable(true);
+        txtCountry.setDisable(true);
+        checkMale.setDisable(true);
+        checkFemale.setDisable(true);
+        txtName.setDisable(true);
+        btnUpdate.setDisable(true);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        txtPassportId.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -83,7 +118,7 @@ public class GuestFormController {
     private void getAll() {
         try {
             ObservableList<GuestTM> obList = FXCollections.observableArrayList();
-            List<GuestDTO> gusList = GuestDAOImpl.getAll();
+            List<GuestDTO> gusList = crudDAO.getAll();
 
             for (GuestDTO guestDTO : gusList) {
                 obList.add(new GuestTM(
@@ -125,7 +160,7 @@ public class GuestFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
         String id = txtId.getText();
         try {
-            boolean isDeleted = GuestDAOImpl.delete(id);
+            boolean isDeleted = crudDAO.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -151,8 +186,12 @@ public class GuestFormController {
         String zipcode = txtZipcode.getText();
         String passportId = txtPassportId.getText();
 
+        if (userId.isEmpty() || id.isEmpty() || name.isEmpty() || gender.isEmpty() || country.isEmpty() || zipcode.isEmpty() || passportId.isEmpty()) {
+            throw new IllegalArgumentException("Please fill out all the required fields!");
+        }
+
         try {
-            boolean isUpdated = GuestDAOImpl.update(userId, id, name, gender, country, zipcode, passportId);
+            boolean isUpdated = crudDAO.update(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest updated!").show();
                 getAll();
@@ -182,16 +221,12 @@ public class GuestFormController {
             String zipcode = txtZipcode.getText();
             String passportId = txtPassportId.getText();
 
-            // Validate fields
-            validateFields(userId, id, name, gender, country, zipcode, passportId);
-
-            // Validate Guest ID
-            validateGuestId(id);
-
-            GuestDTO guestDTO = new GuestDTO(userId, id, name, gender, country, zipcode, passportId);
+            if (userId.isEmpty() || id.isEmpty() || name.isEmpty() || gender.isEmpty() || country.isEmpty() || zipcode.isEmpty() || passportId.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
             // Save guest to database
-            boolean isSaved = GuestDAOImpl.add(guestDTO);
+            boolean isSaved = crudDAO.add(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest saved!").show();
                 getAll();
@@ -203,36 +238,9 @@ public class GuestFormController {
         }
     }
 
-    public void validateFields(String userId, String id, String name, String gender, String country, String zipcode, String passportId) {
-        // Check if all the required fields are not empty
-        if (userId.isEmpty() || id.isEmpty() || name.isEmpty() || gender.isEmpty() || country.isEmpty() || zipcode.isEmpty() || passportId.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void validateGuestId(String id) {
-        // Check if Guest ID is valid using a regular expression
-        String guestIdRegex = "^G\\d+$";
-        if (!id.matches(guestIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid Guest ID starting with 'G' followed by one or more digits (e.g. E001)!");
-        }
-    }
-
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtUser.clear();
-        txtPassportId.clear();
-        txtZipcode.clear();
-        txtCountry.clear();
-        checkFemale.setSelected(false);
-        checkMale.setSelected(false);
-        txtName.clear();
-    }
-
     public void CodeSearchOnAction(ActionEvent actionEvent) throws SQLException {
         try {
-            GuestDTO guestDTO = GuestDAOImpl.search(txtId.getText());
+            GuestDTO guestDTO = (GuestDTO) crudDAO.search(txtId.getText());
             if (guestDTO != null) {
                 txtUser.setText(guestDTO.getUserId());
                 txtId.setText(guestDTO.getId());
@@ -250,5 +258,56 @@ public class GuestFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    private String generateNewGuestId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (tblGuest.getItems().isEmpty()) {
+            return "G00-001";
+        } else {
+            String id = getLastGuestId();
+            int newGuestId = Integer.parseInt(id.replace("G", "")) + 1;
+            return String.format("G00-%03d", newGuestId);
+        }
+    }
+
+    private String getLastGuestId() {
+        List<GuestTM> tempGuestList = new ArrayList<>(tblGuest.getItems());
+        Collections.sort(tempGuestList);
+        return tempGuestList.get(tempGuestList.size() - 1).getId();
+    }
+
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtUser.clear();
+        txtPassportId.clear();
+        txtZipcode.clear();
+        txtCountry.clear();
+        checkFemale.setSelected(false);
+        checkMale.setSelected(false);
+        txtName.clear();
+        txtId.setDisable(false);
+        txtId.setEditable(false);
+        txtId.setText(generateNewGuestId());
+        txtUser.requestFocus();
+        txtUser.setDisable(false);
+        txtPassportId.setDisable(false);
+        txtZipcode.setDisable(false);
+        txtCountry.setDisable(false);
+        checkMale.setDisable(false);
+        checkFemale.setDisable(false);
+        txtName.setDisable(false);
+        btnUpdate.setDisable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        tblGuest.getSelectionModel().clearSelection();
     }
 }

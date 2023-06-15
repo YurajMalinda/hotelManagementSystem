@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,11 +13,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.RoomDTO;
+import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.RoomTM;
 import lk.ijse.hotel.dao.custom.impl.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RoomFormController {
@@ -30,6 +34,10 @@ public class RoomFormController {
     public TextField txtRoomType;
     public TextField txtPrice;
     public TableView<RoomTM> tblRoom;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
     @FXML
     private AnchorPane roomPane;
 
@@ -37,6 +45,23 @@ public class RoomFormController {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtRoomType.clear();
+        txtId.setEditable(false);
+        txtId.setDisable(true);
+        txtPrice.setDisable(true);
+        txtDetails.setDisable(true);
+        txtRoomType.setDisable(true);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
+        txtPrice.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -115,7 +140,7 @@ public class RoomFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = RoomDAOImpl.update(id, details, roomType, price);
+            boolean isUpdated = RoomDAOImpl.update(new RoomDTO(id, details, roomType, price));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Room updated!").show();
                 getAll();
@@ -134,13 +159,11 @@ public class RoomFormController {
             String roomType =txtRoomType.getText();
             Double price = Double.parseDouble(txtPrice.getText());
 
-            validateFields(id, details, roomType);
+            if (id.isEmpty() || details.isEmpty() || roomType.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            // Validate room ID
-            validateRoomId(id);
-
-            RoomDTO roomDTO = new RoomDTO(id, details, roomType, price);
-            boolean isSaved = RoomDAOImpl.add(roomDTO);
+            boolean isSaved = RoomDAOImpl.add(new RoomDTO(id, details, roomType, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Room saved!").show();
                 getAll();
@@ -150,28 +173,6 @@ public class RoomFormController {
         }catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
-    }
-
-    public void validateFields(String id, String details, String roomType) {
-        // Check if all the required fields are not empty
-        if (id.isEmpty() || details.isEmpty() || roomType.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void validateRoomId(String id) {
-        // Check if room ID is valid using a regular expression
-        String employeeIdRegex = "^R\\d+$";
-        if (!id.matches(employeeIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid employee ID starting with 'E' followed by one or more digits (e.g. E123)!");
-        }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtPrice.clear();
-        txtDetails.clear();
-        txtRoomType.clear();
     }
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
@@ -187,4 +188,48 @@ public class RoomFormController {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
     }
+
+    private String generateNewRoomId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        if (tblRoom.getItems().isEmpty()) {
+            return "R00-001";
+        } else {
+            String id = getLastRoomId();
+            int newRoomId = Integer.parseInt(id.replace("R", "")) + 1;
+            return String.format("R00-%03d", newRoomId);
+        }
+    }
+
+    private String getLastRoomId() {
+        List<RoomTM> tempRoomList = new ArrayList<>(tblRoom.getItems());
+        Collections.sort(tempRoomList);
+        return tempRoomList.get(tempRoomList.size() - 1).getId();
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtRoomType.clear();
+        txtId.setDisable(false);
+        txtId.setText(generateNewRoomId());
+        txtDetails.requestFocus();
+        txtPrice.setDisable(false);
+        txtDetails.setDisable(false);
+        txtId.setEditable(false);
+        txtRoomType.setDisable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        btnUpdate.setDisable(false);
+        tblRoom.getSelectionModel().clearSelection();
+    }
 }
+

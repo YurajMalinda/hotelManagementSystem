@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,10 +14,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.custom.impl.InventoryDAOImpl;
 import lk.ijse.hotel.dto.InventoryDTO;
+import lk.ijse.hotel.view.tdm.GuestTM;
 import lk.ijse.hotel.view.tdm.InventoryTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class InventoryFormController {
@@ -29,6 +33,10 @@ public class InventoryFormController {
     public TableColumn colDetails;
     public TableColumn colPrice;
     public TableView <InventoryTM> tblInventory;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
     @FXML
     private AnchorPane inventoryPane;
 
@@ -36,6 +44,23 @@ public class InventoryFormController {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setDisable(true);
+        txtId.setEditable(false);
+        txtPrice.setDisable(true);
+        txtDetails.setDisable(true);
+        txtName.setDisable(true);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
+        txtPrice.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -114,7 +139,7 @@ public class InventoryFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = InventoryDAOImpl.update(id, name, details, price);
+            boolean isUpdated = InventoryDAOImpl.update(new InventoryDTO(id, name, details, price));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "item updated!").show();
                 getAll();
@@ -133,16 +158,13 @@ public class InventoryFormController {
             String details =txtDetails.getText();
             Double price = Double.parseDouble(txtPrice.getText());
 
-            // Validate fields
-            validateFields(id, name, details);
-
-            // Validate Inventory ID
-            validateInventoryId(id);
+            if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
             validatePrice(price);
 
-            InventoryDTO inventoryDTO = new InventoryDTO(id, name, details, price);
-            boolean isSaved = InventoryDAOImpl.add(inventoryDTO);
+            boolean isSaved = InventoryDAOImpl.add(new InventoryDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Item saved!").show();
                 getAll();
@@ -154,21 +176,6 @@ public class InventoryFormController {
         }
     }
 
-    public void validateFields(String id, String name, String details) {
-        // Check if all the required fields are not empty
-        if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void validateInventoryId(String id) {
-        // Check if Inventory ID is valid using a regular expression
-        String inventoryIdRegex = "^Item\\d+$";
-        if (!id.matches(inventoryIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid item ID starting with 'Item' followed by one or more digits (e.g. Item1)!");
-        }
-    }
-
     public static boolean validatePrice(Double price) {
         if (price == null || price.isNaN()) {
             System.out.println("The price is empty.");
@@ -177,14 +184,6 @@ public class InventoryFormController {
             System.out.println("The price is not empty.");
             return true;
         }
-    }
-
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtPrice.clear();
-        txtDetails.clear();
-        txtName.clear();
     }
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
@@ -199,5 +198,47 @@ public class InventoryFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setDisable(false);
+        txtId.setEditable(false);
+        txtId.setText(generateNewItemId());
+        txtName.requestFocus();
+        txtPrice.setDisable(false);
+        txtDetails.setDisable(false);
+        txtName.setDisable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        btnUpdate.setDisable(false);
+        tblInventory.getSelectionModel().clearSelection();
+    }
+
+    private String generateNewItemId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (tblInventory.getItems().isEmpty()) {
+            return "I00-001";
+        } else {
+            String id = getLastItemId();
+            int newItemId = Integer.parseInt(id.replace("I", "")) + 1;
+            return String.format("I00-%03d", newItemId);
+        }
+    }
+
+    private String getLastItemId() {
+        List<InventoryTM> tempItemList = new ArrayList<>(tblInventory.getItems());
+        Collections.sort(tempItemList);
+        return tempItemList.get(tempItemList.size() - 1).getId();
     }
 }

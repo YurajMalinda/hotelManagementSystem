@@ -1,127 +1,56 @@
 package lk.ijse.hotel.dao.custom.impl;
 
+import lk.ijse.hotel.dao.custom.BookingDAO;
 import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class BookingDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM booking WHERE bookingId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        return pstm.executeUpdate() > 0;
+public class BookingDAOImpl implements BookingDAO {
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM booking WHERE bookingId = ?",id);
     }
 
-    public static boolean update(String bookingId, String guestId, String roomId, String checkOut) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "UPDATE booking SET guestId = ?, roomId = ?, checkOut = ? WHERE bookingId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, guestId);
-        pstm.setString(2, roomId);
-        pstm.setDate(3, Date.valueOf(checkOut));
-        pstm.setString(4, bookingId);
-
-        return pstm.executeUpdate() > 0;
+    @Override
+    public boolean update(BookingDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE booking SET guestId = ?, roomId = ?, checkOut = ? WHERE bookingId = ?", dto.getGuestId(), dto.getRoomId(), dto.getCheckOut(), dto.getBookingId());
     }
 
-    public static boolean add(BookingDTO bookingDTO) throws SQLException {
-        String sql = "INSERT INTO booking(guestId, bookingId, bookingDate, roomId, checkIn, checkOut) " +
-                "VALUES(?, ?, ?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                bookingDTO.getGuestId(),
-                bookingDTO.getBookingId(),
-                bookingDTO.getBookingDate(),
-                bookingDTO.getRoomId(),
-                bookingDTO.getCheckIn(),
-                bookingDTO.getCheckOut());
-
+    @Override
+    public boolean add(BookingDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO booking(guestId, bookingId, bookingDate, roomId, checkIn, checkOut)VALUES(?, ?, ?, ?, ?, ?)",dto.getGuestId(),dto.getBookingId(),dto.getBookingDate(),dto.getRoomId(),dto.getCheckIn(),dto.getCheckOut());
     }
 
-    public static BookingDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM booking WHERE bookingId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        ResultSet resultSet = pstm.executeQuery();
-        if(resultSet.next()) {
-            return new BookingDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4),
-                    resultSet.getString(5),
-                    resultSet.getString(6)
-            );
+    @Override
+    public BookingDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM booking WHERE bookingId = ?",id);
+        if(rst.next()){
+            return new BookingDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6));
         }
         return null;
     }
 
-    public static List<BookingDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM booking";
-        List<BookingDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-
-        while (resultSet.next()) {
-            data.add(new BookingDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4),
-                    resultSet.getString(5),
-                    resultSet.getString(6)
-            ));
+    @Override
+    public ArrayList<BookingDTO> getAll() throws SQLException {
+        ArrayList<BookingDTO> allBookings= new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM booking");
+        while (rst.next()){
+            allBookings.add(new BookingDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6)));
         }
-        return data;
-    }
-    public static void releaseRoom(String roomId) throws SQLException {
-        String release = "Booked";
-        String sql4 = "UPDATE room SET roomDetails = ? WHERE roomId = ?";
-
-        PreparedStatement st = DBConnection.getInstance().getConnection().prepareStatement(sql4);
-        st.setString(1, release);
-        st.setString(2, roomId);
-        st.executeUpdate();
+        return allBookings;
     }
 
-    public static List<String> loadIds() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        ResultSet resultSet = con.createStatement().executeQuery("SELECT bookingId FROM booking");
-
-        List<String> data = new ArrayList<>();
-
-        while (resultSet.next()) {
-            data.add(resultSet.getString(1));
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute("SELECT bookingId FROM booking ORDER BY bookingId DESC LIMIT 1;");
+        if (rst.next()) {
+            String id = rst.getString("id");
+            int newBookingId = Integer.parseInt(id.replace("B00-", "")) + 1;
+            return String.format("B00-%03d", newBookingId);
+        } else {
+            return "B00-001";
         }
-        return data;
-    }
-
-    public static BookingDTO searchById(String code) throws SQLException {
-        PreparedStatement pstm = DBConnection.getInstance().getConnection()
-                .prepareStatement("SELECT * FROM booking WHERE bookingId = ?");
-        pstm.setString(1, code);
-        ResultSet resultSet = pstm.executeQuery();
-
-        if(resultSet.next()) {
-            return new BookingDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4),
-                    resultSet.getString(5),
-                    resultSet.getString(6)
-
-            );
-        }
-        return null;
     }
 }

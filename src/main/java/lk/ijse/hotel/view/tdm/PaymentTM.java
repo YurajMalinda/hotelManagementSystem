@@ -7,7 +7,7 @@ import lombok.*;
 @Getter
 @Setter
 @ToString
-public class PaymentTM {
+public class PaymentTM implements Comparable<PaymentTM>{
     String paymentId;
     String guestId;
     String guestName;
@@ -17,4 +17,9 @@ public class PaymentTM {
     String checkOut;
     Double orderAm;
     Double total;
+
+    @Override
+    public int compareTo(PaymentTM o) {
+        return paymentId.compareTo(o.paymentId);
+    }
 }

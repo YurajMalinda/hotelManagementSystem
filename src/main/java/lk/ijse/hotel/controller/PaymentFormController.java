@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,10 +14,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dao.custom.impl.*;
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.BookingDTO;
-import lk.ijse.hotel.dto.GuestDTO;
-import lk.ijse.hotel.dto.PaymentDTO;
-import lk.ijse.hotel.dto.RoomDTO;
+import lk.ijse.hotel.dto.*;
+import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.PaymentTM;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
@@ -28,6 +27,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PaymentFormController {
@@ -63,11 +64,42 @@ public class PaymentFormController {
     public Label lblCheckIn;
     @FXML
     public Label lblCheckOut;
-    
+    public JFXButton btnAddNew;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+
     public void initialize() {
         getAll();
         setValueFactory();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtPaymentId.setText("");
+        lblGuestId.setText("");
+        lblName.setText("");
+        txtBookingId.setText("");
+        lblRoomId.setText("");
+        lblCheckIn.setText("");
+        lblCheckOut.setText("");
+        lblAmount.setText("");
+        lblPrice.setText("");
+        txtPaymentId.setDisable(true);
+        lblGuestId.setDisable(true);
+        lblName.setDisable(true);
+        txtBookingId.setDisable(true);
+        lblRoomId.setDisable(true);
+        lblCheckIn.setDisable(true);
+        lblCheckOut.setDisable(true);
+        lblAmount.setDisable(true);
+        lblPrice.setDisable(true);
+        txtPaymentId.setEditable(false);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
+        txtBookingId.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -123,17 +155,7 @@ public class PaymentFormController {
             List<PaymentDTO> paymentDTOList = PaymentDAOImpl.getAll();
 
             for (PaymentDTO paymentDTO : paymentDTOList) {
-                obList.add(new PaymentTM(
-                        paymentDTO.getPaymentId(),
-                        paymentDTO.getGuestId(),
-                        paymentDTO.getGuestName(),
-                        paymentDTO.getResId(),
-                        paymentDTO.getRoomId(),
-                        paymentDTO.getCheckIn(),
-                        paymentDTO.getCheckOut(),
-                        paymentDTO.getOrderAm(),
-                        paymentDTO.getTotal()
-                ));
+                obList.add(new PaymentTM(paymentDTO.getPaymentId(), paymentDTO.getGuestId(), paymentDTO.getGuestName(), paymentDTO.getResId(), paymentDTO.getRoomId(), paymentDTO.getCheckIn(), paymentDTO.getCheckOut(), paymentDTO.getOrderAm(), paymentDTO.getTotal()));
             }
             tblPayment.setItems(obList);
         } catch (SQLException e) {
@@ -143,10 +165,10 @@ public class PaymentFormController {
     }
     @FXML
     public void resOnAction(){
-        String code = txtBookingId.getText();
+        String id = txtBookingId.getText();
         try {
-            BookingDTO res = BookingDAOImpl.searchById(code);
-            Double orderAm = getOrderAmmount(code);
+            BookingDTO res = BookingDAOImpl.search(id);
+            Double orderAm = getOrderAmmount(id);
 
             LocalDate checkIn = LocalDate.parse(res.getCheckIn());
             LocalDate checkOut = LocalDate.parse(res.getCheckOut());
@@ -181,10 +203,10 @@ public class PaymentFormController {
     }
 
     @FXML
-    public Double getOrderAmmount(String code) {
+    public Double getOrderAmmount(String id) {
         Double orderAmmount = 0.0;
         try {
-            orderAmmount = PlaceOrderDAOImpl.getOrderAm(code);
+            orderAmmount = paymentBO.getOrderAmount(id);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -222,9 +244,8 @@ public class PaymentFormController {
         Double ordersAm = Double.valueOf(lblAmount.getText());
         Double totalPrice = Double.valueOf(lblPrice.getText());
 
-        PaymentDTO paymentDTO = new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
         try {
-            boolean isUpdated = PaymentDAOImpl.update(paymentDTO);
+            boolean isUpdated = PaymentDAOImpl.update(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
             if(isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment updated!").show();
                 getAll();
@@ -251,12 +272,11 @@ public class PaymentFormController {
         Double totalPrice = Double.valueOf(lblPrice.getText());
         String release = "Available";
 
-        PaymentDTO paymentDTO = new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice);
         try {
-            boolean isSaved = PaymentDAOImpl.add(paymentDTO);
+            boolean isSaved = PaymentDAOImpl.add(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment saved!").show();
-                RoomDAOImpl.releaseRoom(roomId,release);
+                roomBO.releaseRoom(roomId,release);
                 getAll();
                 setValueFactory();
 
@@ -279,21 +299,11 @@ public class PaymentFormController {
         }
     }
 
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtPaymentId.setText("");
-        lblGuestId.setText("");
-        lblName.setText("");
-        txtBookingId.setText("");
-        lblRoomId.setText("");
-        lblCheckIn.setText("");
-        lblCheckOut.setText("");
-        lblAmount.setText("");
-        lblPrice.setText("");
-    }
     @FXML
     public void codeSearchOnAction(ActionEvent actionEvent) {
        resOnAction();
     }
+
     private void clearTxt(){
         txtPaymentId.setText("");
         lblGuestId.setText("");
@@ -304,6 +314,57 @@ public class PaymentFormController {
         lblCheckOut.setText("");
         lblAmount.setText("");
         lblPrice.setText("");
+    }
 
+    private String generateNewPaymentId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (tblPayment.getItems().isEmpty()) {
+            return "P00-001";
+        } else {
+            String id = getLastPaymentId();
+            int newPaymentId = Integer.parseInt(id.replace("P", "")) + 1;
+            return String.format("P00-%03d", newPaymentId);
+        }
+    }
+
+    private String getLastPaymentId() {
+        List<PaymentTM> tempPaymentList = new ArrayList<>(tblPayment.getItems());
+        Collections.sort(tempPaymentList);
+        return tempPaymentList.get(tempPaymentList.size() - 1).getPaymentId();
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtPaymentId.setText("");
+        lblGuestId.setText("");
+        lblName.setText("");
+        txtBookingId.setText("");
+        lblRoomId.setText("");
+        lblCheckIn.setText("");
+        lblCheckOut.setText("");
+        lblAmount.setText("");
+        lblPrice.setText("");
+        txtPaymentId.setDisable(false);
+        txtPaymentId.requestFocus();
+        txtPaymentId.setText(generateNewPaymentId());
+        lblGuestId.setDisable(false);
+        lblName.setDisable(false);
+        txtBookingId.setDisable(false);
+        lblRoomId.setDisable(false);
+        lblCheckIn.setDisable(false);
+        lblCheckOut.setDisable(false);
+        lblAmount.setDisable(false);
+        lblPrice.setDisable(false);
+        txtPaymentId.setEditable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        btnUpdate.setDisable(false);
+        tblPayment.getSelectionModel().clearSelection();
     }
 }

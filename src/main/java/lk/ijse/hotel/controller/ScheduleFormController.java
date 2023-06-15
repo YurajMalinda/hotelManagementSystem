@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,11 +12,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.ScheduleDTO;
+import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.ScheduleTM;
 import lk.ijse.hotel.dao.custom.impl.ScheduleDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ScheduleFormController {
@@ -24,12 +28,26 @@ public class ScheduleFormController {
     public TableColumn colId;
     public TableColumn colDetails;
     public TextField txtId;
-    public TextArea txtDetails;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
+    public TextField txtDetails;
 
     public void initialize() {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtDetails.clear();
+        txtId.setDisable(true);
+        txtDetails.setDisable(true);
+        txtId.setEditable(false);
+        txtDetails.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -100,13 +118,11 @@ public class ScheduleFormController {
                 String id = txtId.getText();
                 String details = txtDetails.getText();
 
-                // Validate fields
-                validateFields(id, details);
+                if (id.isEmpty() || details.isEmpty()) {
+                    throw new IllegalArgumentException("Please fill out all the required fields!");
+                }
 
-                // Validate schedule ID
-                validateScheduleId(id);
-
-                boolean isUpdated = ScheduleDAOImpl.update(id, details);
+                boolean isUpdated = ScheduleDAOImpl.update(new ScheduleDTO(id, details));
                 if(isUpdated) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
                     getAll();
@@ -124,16 +140,11 @@ public class ScheduleFormController {
                 String id = txtId.getText();
                 String details = txtDetails.getText();
 
-                // Validate fields
-                validateFields(id, details);
-
-                // Validate schedule ID
-                validateScheduleId(id);
-
-                ScheduleDTO scheduleDTO = new ScheduleDTO(id, details);
-
+                if (id.isEmpty() || details.isEmpty()) {
+                    throw new IllegalArgumentException("Please fill out all the required fields!");
+                }
                 // Save booking to database
-                boolean isSaved = ScheduleDAOImpl.add(scheduleDTO);
+                boolean isSaved = ScheduleDAOImpl.add(new ScheduleDTO(id, details));
                 if (isSaved) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
                     getAll();
@@ -143,26 +154,6 @@ public class ScheduleFormController {
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to save employee to database!").show();
             }
-        }
-
-        public void validateFields(String id, String details) {
-            // Check if all the required fields are not empty
-            if (id.isEmpty() || details.isEmpty()) {
-                throw new IllegalArgumentException("Please fill out all the required fields!");
-            }
-        }
-
-        public void validateScheduleId(String id) {
-            // Check if booking ID is valid using a regular expression
-            String scheduleIdRegex = "^S\\d+$";
-            if (!id.matches(scheduleIdRegex)) {
-                throw new IllegalArgumentException("Please enter a valid schedule ID starting with 'S' followed by one or more digits (e.g. S123)!");
-            }
-        }
-
-        public void btnClearOnAction (ActionEvent actionEvent){
-        txtId.clear();
-        txtDetails.clear();
         }
 
         public void codeSearchOnAction (ActionEvent actionEvent){
@@ -176,4 +167,39 @@ public class ScheduleFormController {
                 new Alert(Alert.AlertType.ERROR, "something happened!").show();
             }
         }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtDetails.clear();
+        txtId.setDisable(false);
+        txtId.setText(generateNewScheduleId());
+        txtDetails.requestFocus();
+        txtDetails.setDisable(false);
+        txtId.setEditable(false);
+        tblSchedule.getSelectionModel().clearSelection();
     }
+
+    private String generateNewScheduleId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (tblSchedule.getItems().isEmpty()) {
+            return "S00-001";
+        } else {
+            String id = getLastSheduleId();
+            int newScheduleId = Integer.parseInt(id.replace("S", "")) + 1;
+            return String.format("S00-%03d", newScheduleId);
+        }
+    }
+
+    private String getLastSheduleId() {
+        List<ScheduleTM> tempScheduleList = new ArrayList<>(tblSchedule.getItems());
+        Collections.sort(tempScheduleList);
+        return tempScheduleList.get(tempScheduleList.size() - 1).getId();
+    }
+}

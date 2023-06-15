@@ -1,4 +1,7 @@
 package lk.ijse.hotel.dao.custom;
 
-public interface InventoryDAO {
+import lk.ijse.hotel.dao.CrudDAO;
+import lk.ijse.hotel.dto.InventoryDTO;
+
+public interface InventoryDAO extends CrudDAO<InventoryDTO , String> {
 }

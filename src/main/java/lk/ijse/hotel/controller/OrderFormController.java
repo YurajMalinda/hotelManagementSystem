@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,13 +13,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.custom.impl.OrderBOImpl;
+import lk.ijse.hotel.dao.CrudDAO;
 import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.FoodDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
-import lk.ijse.hotel.dto.BookingDTO;
-import lk.ijse.hotel.dto.FoodDTO;
-import lk.ijse.hotel.dto.GuestDTO;
-import lk.ijse.hotel.dto.OrderDetailsDTO;
+import lk.ijse.hotel.dto.*;
+import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.OrderTM;
 import lk.ijse.hotel.dao.custom.impl.OrderDAOImpl;
 
@@ -26,10 +27,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrderFormController implements Initializable {
     public AnchorPane orderPane;
@@ -55,15 +54,26 @@ public class OrderFormController implements Initializable {
     public TextField txtQty;
     public Label lblPrice;
     public TableColumn colAction;
+    public JFXButton btnAdd;
+    public JFXButton btnPlaceOrder;
     private ObservableList<OrderTM> obList = FXCollections.observableArrayList();
 
+    CrudDAO crudDAO = new OrderDAOImpl();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadBookingIds();
         loadFoodIds();
         setOrderDate();
         setValueFactory();
+        initUI();
     }
+
+    private void initUI() {
+        txtOrderId.setText(generateNewOrderId());
+        txtOrderId.setEditable(false);
+        txtQty.setOnAction(event -> btnAdd.fire());
+    }
+
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1){
             Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
@@ -95,39 +105,6 @@ public class OrderFormController implements Initializable {
         colAction.setCellValueFactory(new PropertyValueFactory<>("removeBtn"));
 
     }
-
-
-    /*public void btnAddToCartOnAction(ActionEvent actionEvent) {
-        if (!txtQty.getText().isBlank() && !txtOrderId.getText().isBlank()) {
-            String code = cmbFoodId.getValue();
-            String description = lblFoodName.getText();
-            int qty = Integer.parseInt(txtQty.getText());
-            double unitPrice = Double.parseDouble(lblPrice.getText());
-            double total = qty * unitPrice;
-
-            if (!obList.isEmpty()) {
-                for (int i = 0; i < tblOrder.getItems().size(); i++) {
-                    if (colFoodId.getCellData(i).equals(code)) {
-                        qty += (int) colQty.getCellData(i);
-                        total = qty * unitPrice;
-
-                        obList.get(i).setQty(qty);
-                        obList.get(i).setTotal(total);
-
-                        tblOrder.refresh();
-                        calculateNetTotal();
-                        return;
-                    }
-                }
-            }
-
-            OrderTM tm = new OrderTM(txtOrderId.getText(), cmbBookingId.getValue(), lblGuestId.getText(), lblName.getText(), lblOrderDate.getText(), code, description, unitPrice, qty, total);
-
-            obList.add(tm);
-            tblOrder.setItems(obList);
-            calculateNetTotal();
-        }
-    }*/
 
     public void btnAddToCartOnAction(ActionEvent actionEvent) {
         if (!txtQty.getText().isBlank() && !txtOrderId.getText().isBlank()) {
@@ -181,8 +158,6 @@ public class OrderFormController implements Initializable {
         });
     }
 
-
-
     private void calculateNetTotal() {
         double netTotal = 0.0;
         for (int i = 0; i < tblOrder.getItems().size(); i++) {
@@ -192,64 +167,56 @@ public class OrderFormController implements Initializable {
     }
 
     public void btnPlaceOrderOnAction(ActionEvent actionEvent) {
-        String oId = txtOrderId.getText();
-        String cusId = cmbBookingId.getValue();
-
-        List<OrderDetailsDTO> cartDTOList = new ArrayList<>();
-
-        for (int i = 0; i < tblOrder.getItems().size(); i++) {
-            OrderTM orderTM = obList.get(i);
-
-            OrderDetailsDTO dto = new OrderDetailsDTO(
-                    orderTM.getOrderID(),
-                    orderTM.getFoodID(),
-                    orderTM.getQty(),
-                    orderTM.getTotal(),
-                    orderTM.getOrderDate()
-            );
-            cartDTOList.add(dto);
+        boolean b = saveOrder(txtOrderId.getText(), lblOrderDate.getText(), cmbBookingId.getValue(), tblOrder.getItems().stream().map(tm -> new OrderDetailsDTO(tm.getOrderID(), tm.getFoodID(), tm.getQty(), tm.getTotal(), tm.getOrderDate())).collect(Collectors.toList()));
+        if (b) {
+            new Alert(Alert.AlertType.INFORMATION, "Order has been placed successfully").show();
+        } else {
+            new Alert(Alert.AlertType.ERROR, "Order has not been placed successfully").show();
         }
-        String date = lblOrderDate.getText();
-        boolean isPlaced = false;
+
+        txtOrderId.setText(generateNewOrderId());
+        cmbBookingId.getSelectionModel().clearSelection();
+        cmbFoodId.getSelectionModel().clearSelection();
+        tblOrder.getItems().clear();
+        txtQty.clear();
+        calculateNetTotal();
+    }
+
+    private boolean saveOrder(String orderId, String date, String bookingId, List<OrderDetailsDTO> orderDetails) {
         try {
-            isPlaced = OrderDAOImpl.placeOrder(cartDTOList,oId,cusId);
-            if(isPlaced) {
-                new Alert(Alert.AlertType.CONFIRMATION, "Order Placed").show();
-                obList.clear();
-            } else {
-                new Alert(Alert.AlertType.ERROR, "Order Not Placed").show();
-            }
+            return orderBOimpl.saveOrder(new OrderDTO(orderId, date, bookingId, orderDetails));
         } catch (SQLException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error").show();
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
     private void loadBookingIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = BookingDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<BookingDTO> allBookings = orderBO.getAllBookings();
+            for (BookingDTO c : allBookings) {
+                cmbBookingId.getItems().add(c.getBookingId());
             }
-            cmbBookingId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
+
     private void loadFoodIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = FoodDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<FoodDTO> allFoods = orderBO.getAllFoods();
+            for (FoodDTO c : allFoods) {
+                cmbFoodId.getItems().add(c.getId());
             }
-            cmbFoodId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
@@ -259,14 +226,13 @@ public class OrderFormController implements Initializable {
     }
 
     public void bookIdOnAction(ActionEvent actionEvent) {
-        String code = cmbBookingId.getValue();
+        String id = cmbBookingId.getValue();
         try {
-            BookingDTO res = BookingDAOImpl.searchById(code);
+            BookingDTO res = (BookingDTO) crudDAO.search(id);
             String cod = res.getGuestId();
-            GuestDTO ges = GuestDAOImpl.search(cod);
+            GuestDTO ges = (GuestDTO) crudDAO.search(cod);
             String gesCode = ges.getName();
             fillBookFields(res,gesCode);
-
             txtQty.requestFocus();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -281,9 +247,9 @@ public class OrderFormController implements Initializable {
     }
 
     public void foodIdOnAction(ActionEvent actionEvent) {
-        String code = cmbFoodId.getValue();
+        String id = cmbFoodId.getValue();
         try {
-            FoodDTO foodDTO = FoodDAOImpl.searchById(code);
+            FoodDTO foodDTO = (FoodDTO) crudDAO.search(id);
             fillMealFields(foodDTO);
 
             txtQty.requestFocus();
@@ -294,5 +260,16 @@ public class OrderFormController implements Initializable {
     }
     private void setOrderDate() {
         lblOrderDate.setText(String.valueOf(LocalDate.now()));
+    }
+
+    private String generateNewOrderId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "O00-001";
     }
 }

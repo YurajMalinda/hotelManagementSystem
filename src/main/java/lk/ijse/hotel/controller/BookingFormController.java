@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,15 +13,20 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.CrudDAO;
 import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
 import lk.ijse.hotel.dto.BookingDTO;
+import lk.ijse.hotel.dto.GuestDTO;
+import lk.ijse.hotel.dto.RoomDTO;
 import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.dao.custom.impl.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -40,9 +46,15 @@ public class BookingFormController {
     public DatePicker txtDate;
     public DatePicker txtCheckIn;
     public DatePicker txtCheckOut;
+    public JFXButton btnAdd;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAddNew;
 
     @FXML
     private AnchorPane bookingPane;
+
+    CrudDAO crudDAO = new BookingDAOImpl();
 
     public void initialize() {
         setCellValueFactory();
@@ -50,6 +62,27 @@ public class BookingFormController {
         loadGuestIds();
         loadRoomIds();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        cmbGuestId.setValue(null);
+        txtBookingId.clear();
+        txtDate.setValue(null);
+        cmbRoomId.setValue(null);
+        txtCheckIn.setValue(null);
+        txtCheckOut.setValue(null);
+        cmbGuestId.setDisable(true);
+        txtBookingId.setDisable(true);
+        txtDate.setDisable(true);
+        cmbRoomId.setDisable(true);
+        txtCheckIn.setDisable(true);
+        txtCheckOut.setDisable(true);
+        txtBookingId.setEditable(false);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
+        txtCheckOut.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -67,31 +100,27 @@ public class BookingFormController {
 
     private void loadGuestIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = GuestDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<GuestDTO> allGuests = bookingBO.getAllGuests();
+            for (GuestDTO c : allGuests) {
+                cmbGuestId.getItems().add(c.getId());
             }
-            cmbGuestId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
     private void loadRoomIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = RoomDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<RoomDTO> allRooms = bookingBO.getAllRooms();
+            for (RoomDTO c : allRooms) {
+                cmbRoomId.getItems().add(c.getId());
             }
-            cmbRoomId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
@@ -108,7 +137,7 @@ public class BookingFormController {
     private void getAll() {
         try {
             ObservableList<BookingTM> obList = FXCollections.observableArrayList();
-            List<BookingDTO> bookingDTOList = BookingDAOImpl.getAll();
+            List<BookingDTO> bookingDTOList = crudDAO.getAll();
 
             for (BookingDTO bookingDTO : bookingDTOList) {
                 obList.add(new BookingTM(
@@ -145,43 +174,6 @@ public class BookingFormController {
         }
     }
 
-    public void btnDeleteOnAction(ActionEvent actionEvent) {
-        String id = txtBookingId.getText();
-        try {
-            boolean isDeleted = BookingDAOImpl.delete(id);
-            if (isDeleted) {
-                new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
-                        getAll();
-            }
-        } catch (SQLException e) {
-            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
-        }
-    }
-
-    public void btnUpdateOnAction(ActionEvent actionEvent) {
-        try {
-            String guestId = (String) cmbGuestId.getValue();
-            String bookingId = txtBookingId.getText();
-            String roomId = (String) cmbRoomId.getValue();
-            LocalDate selectedOutDate = txtCheckOut.getValue();
-            String checkOut = selectedOutDate.toString();
-
-            // Validate booking ID
-            validateBookingId(bookingId);
-
-            boolean isUpdated = BookingDAOImpl.update(guestId, bookingId, roomId, checkOut);
-            if(isUpdated) {
-                new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
-                        getAll();
-            }
-        } catch (IllegalArgumentException e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
-        }
-    }
-
     public void btnAddOnAction(ActionEvent actionEvent) {
         try {
             String guestId = (String) cmbGuestId.getValue();
@@ -194,16 +186,11 @@ public class BookingFormController {
             LocalDate selectedOutDate = txtCheckOut.getValue();
             String checkOut = selectedOutDate.toString();
 
-            // Validate fields
-            validateFields(guestId, bookingId, bookingDate, roomId, checkIn, checkOut);
+            if (guestId.isEmpty() || bookingId.isEmpty() || bookingDate.isEmpty() || roomId.isEmpty() || checkIn.isEmpty() || checkOut.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            // Validate booking ID
-            validateBookingId(bookingId);
-
-            BookingDTO bookingDTO = new BookingDTO(guestId, bookingId, bookingDate, roomId, checkIn, checkOut);
-
-            // Save booking to database
-            boolean isSaved = BookingDAOImpl.add(bookingDTO);
+            boolean isSaved = crudDAO.add(new BookingDTO(guestId, bookingId, bookingDate, roomId, checkIn, checkOut));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
                 BookingDAOImpl.releaseRoom(roomId);
@@ -214,35 +201,52 @@ public class BookingFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to save employee to database!").show();
         }
+        btnAddNew.fire();
     }
 
-    public void validateFields(String guestId, String bookingId, String bookingDate, String roomId, String checkIn, String checkOut) {
-        // Check if all the required fields are not empty
-        if (guestId.isEmpty() || bookingId.isEmpty() || bookingDate.isEmpty() || roomId.isEmpty() || checkIn.isEmpty() || checkOut.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
+    public void btnUpdateOnAction(ActionEvent actionEvent) {
+        try {
+            String guestId = (String) cmbGuestId.getValue();
+            String bookingId = txtBookingId.getText();
+            String roomId = (String) cmbRoomId.getValue();
+            LocalDate selectedOutDate = txtCheckOut.getValue();
+            String checkOut = selectedOutDate.toString();
+
+            if (guestId.isEmpty() || bookingId.isEmpty() || roomId.isEmpty() || checkOut.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
+
+            boolean isUpdated = crudDAO.update(new BookingDTO(guestId, roomId, checkOut, bookingId));
+            if(isUpdated) {
+                new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
+                getAll();
+            }
+        } catch (IllegalArgumentException e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
+        btnAddNew.fire();
     }
 
-    public void validateBookingId(String id) {
-        // Check if booking ID is valid using a regular expression
-        String bookingIdRegex = "^B\\d+$";
-        if (!id.matches(bookingIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid booking ID starting with 'B' followed by one or more digits (e.g. B123)!");
+    public void btnDeleteOnAction(ActionEvent actionEvent) {
+        String id = txtBookingId.getText();
+        try {
+            boolean isDeleted = crudDAO.delete(id);
+            if (isDeleted) {
+                new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
+                        getAll();
+                        initUI();
+            }
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        cmbGuestId.setValue(null);
-        txtBookingId.clear();
-        txtDate.setValue(null);
-        cmbRoomId.setValue(null);
-        txtCheckIn.setValue(null);
-        txtCheckOut.setValue(null);
     }
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            BookingDTO bookingDTO = BookingDAOImpl.search(txtBookingId.getText());
+            BookingDTO bookingDTO = (BookingDTO) crudDAO.search(txtBookingId.getText());
             if (bookingDTO != null) {
                 cmbGuestId.setValue(bookingDTO.getGuestId());
                 txtBookingId.setText(bookingDTO.getBookingId());
@@ -254,5 +258,52 @@ public class BookingFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    private String generateNewBookingId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        if (tblBooking.getItems().isEmpty()) {
+            return "B00-001";
+        } else {
+            String id = getLastBookingId();
+            int newBookingId = Integer.parseInt(id.replace("B", "")) + 1;
+            return String.format("B00-%03d", newBookingId);
+        }
+    }
+
+    private String getLastBookingId() {
+        List<BookingTM> tempBookingList = new ArrayList<>(tblBooking.getItems());
+        Collections.sort(tempBookingList);
+        return tempBookingList.get(tempBookingList.size() - 1).getBookingId();
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        cmbGuestId.setValue(null);
+        txtBookingId.clear();
+        txtDate.setValue(null);
+        cmbRoomId.setValue(null);
+        txtCheckIn.setValue(null);
+        txtCheckOut.setValue(null);
+        cmbGuestId.setDisable(true);
+        cmbGuestId.requestFocus();
+        txtBookingId.setDisable(false);
+        txtBookingId.setText(generateNewBookingId());
+        txtDate.setDisable(false);
+        cmbRoomId.setDisable(false);
+        txtCheckIn.setDisable(false);
+        txtCheckOut.setDisable(false);
+        txtBookingId.setEditable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        btnUpdate.setDisable(false);
+        tblBooking.getSelectionModel().clearSelection();
     }
 }

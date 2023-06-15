@@ -1,32 +1,47 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
+import lk.ijse.hotel.dao.custom.LoginDAO;
+import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.dto.LoginDTO;
+import lk.ijse.hotel.dto.OrderDTO;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class LoginDAOImpl {
-    public static List<String> loadTitles() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        ResultSet resultSet = con.createStatement().executeQuery("SELECT title FROM user");
-
-        List<String> data = new ArrayList<>();
-
-        while (resultSet.next()) {
-            data.add(resultSet.getString(1));
-        }
-        return data;
+public class LoginDAOImpl implements LoginDAO {
+    @Override
+    public boolean delete(String s) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
     }
-        /*if (rst.next()) {
-            // Login successful, load dashboard
-            Stage stage = (Stage) loginPane.getScene().getWindow();
-            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"))));
-            stage.setTitle("Manage");
-            stage.centerOnScreen();
-            stage.show();
 
-        }*/
+    @Override
+    public boolean update(LoginDTO dto) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
+    }
+
+    @Override
+    public boolean add(LoginDTO dto) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
+    }
+
+    @Override
+    public LoginDTO search(String s) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
+    }
+
+    @Override
+    public ArrayList<LoginDTO> getAll() throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM user");
+        ArrayList<LoginDTO> allLoginDetails = new ArrayList<>();
+        while (rst.next()) {
+            allLoginDetails.add(new LoginDTO(rst.getString(1), rst.getString(2), rst.getString(3)));
+        }
+        return allLoginDetails;
+    }
+
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
+    }
 }

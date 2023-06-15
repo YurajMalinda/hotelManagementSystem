@@ -1,4 +1,7 @@
 package lk.ijse.hotel.dao.custom;
 
-public interface PaymentDAO {
+import lk.ijse.hotel.dao.CrudDAO;
+import lk.ijse.hotel.dto.PaymentDTO;
+
+public interface PaymentDAO extends CrudDAO<PaymentDTO, String> {
 }

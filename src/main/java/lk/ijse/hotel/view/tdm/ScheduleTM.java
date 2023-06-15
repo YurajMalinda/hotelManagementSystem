@@ -8,7 +8,12 @@ import lombok.*;
 @Setter
 @ToString
 
-public class ScheduleTM {
+public class ScheduleTM implements Comparable<ScheduleTM>{
     private String id;
     private String details;
+
+    @Override
+    public int compareTo(ScheduleTM o) {
+        return id.compareTo(o.id);
+    }
 }

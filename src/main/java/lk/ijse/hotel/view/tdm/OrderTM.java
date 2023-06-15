@@ -10,7 +10,7 @@ import java.awt.*;
 @Getter
 @Setter
 @ToString
-public class OrderTM {
+public class OrderTM implements Comparable<OrderTM> {
     private String orderID;
     private String BookID;
     private String guestID;
@@ -22,4 +22,9 @@ public class OrderTM {
     private Integer qty;
     private Double total;
     private Button removeBtn;
+
+    @Override
+    public int compareTo(OrderTM o) {
+        return orderID.compareTo(o.orderID);
+    }
 }

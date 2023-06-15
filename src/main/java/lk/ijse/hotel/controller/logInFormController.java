@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,39 +13,45 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dao.custom.impl.LoginDAOImpl;
+import lk.ijse.hotel.dto.GuestDTO;
+import lk.ijse.hotel.dto.LoginDTO;
 
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class logInFormController {
-
     public TextField txtUserName;
     public TextField txtPassword;
     public ComboBox cmbTitle;
+    public JFXButton btnLogin;
     @FXML
     private AnchorPane loginPane;
 
     public void initialize() {
         loadTitles();
+        initUI();
+    }
+
+    private void initUI() {
+        txtPassword.setOnAction(event -> btnLogin.fire());
     }
 
     private void loadTitles() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> titles = LoginDAOImpl.loadTitles();
-
-            for (String title : titles) {
-                obList.add(title);
+            ArrayList<LoginDTO> allLoginDetails = LoginBO.getAllLoginDetails();
+            for (LoginDTO c : allLoginDetails) {
+                cmbTitle.getItems().add(c.getTitle());
             }
-            cmbTitle.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load Titles").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
@@ -52,8 +59,6 @@ public class logInFormController {
         String title = (String) cmbTitle.getValue();
         String userName = txtUserName.getText();
         String password = txtPassword.getText();
-
-
         try {
             Connection conn = DBConnection.getInstance().getConnection();
             PreparedStatement stm = conn.prepareStatement("SELECT * FROM user WHERE title = ? AND userName = ? AND password = ?");
@@ -96,5 +101,4 @@ public class logInFormController {
             alert.showAndWait();
         }
     }
-
 }

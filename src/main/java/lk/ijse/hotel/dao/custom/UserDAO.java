@@ -1,4 +1,7 @@
 package lk.ijse.hotel.dao.custom;
 
-public interface UserDAO {
+import lk.ijse.hotel.dao.CrudDAO;
+import lk.ijse.hotel.dto.UserDTO;
+
+public interface UserDAO extends CrudDAO<UserDTO, String> {
 }

@@ -15,4 +15,7 @@ public class BookingDTO {
     private String roomId;
     private String checkIn;
     private String checkOut;
+
+    public BookingDTO(String guestId, String roomId, String checkOut, String bookingId) {
+    }
 }

@@ -16,4 +16,7 @@ public class EmployeeDTO {
     private String email;
     private String nic;
     private String address;
+
+    public EmployeeDTO(String id, String name, String gender, String address, String email, String nic) {
+    }
 }

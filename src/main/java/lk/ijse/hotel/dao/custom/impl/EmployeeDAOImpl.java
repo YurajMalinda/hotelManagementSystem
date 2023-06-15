@@ -1,96 +1,55 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
+import lk.ijse.hotel.dao.custom.EmployeeDAO;
 import lk.ijse.hotel.dto.EmployeeDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class EmployeeDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM employee WHERE empId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        return pstm.executeUpdate() > 0;
+public class EmployeeDAOImpl implements EmployeeDAO {
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM employee WHERE empId = ?", id);
     }
 
-    public static boolean update(String id, String name, String gender, String email, String nic, String address) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "UPDATE employee SET empName = ?, gender = ?, email = ?, nic = ?, address = ? WHERE empId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, name);
-        pstm.setString(2, gender);
-        pstm.setString(3, email);
-        pstm.setString(4, nic);
-        pstm.setString(5, address);
-        pstm.setString(6, id);
-
-        return pstm.executeUpdate() > 0;
+    @Override
+    public boolean update(EmployeeDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE employee SET empName = ?, gender = ?, email = ?, nic = ?, address = ? WHERE empId = ?", dto.getName(), dto.getGender(), dto.getEmail(), dto.getNic(), dto.getAddress(), dto.getId());
     }
 
-    public static boolean add(EmployeeDTO employeeDTO) throws SQLException {
-        String sql = "INSERT INTO employee(userId, empId, empName, gender, email, nic, address) " +
-                "VALUES(?, ?, ?, ?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                employeeDTO.getUserId(),
-                employeeDTO.getId(),
-                employeeDTO.getName(),
-                employeeDTO.getGender(),
-                employeeDTO.getEmail(),
-                employeeDTO.getNic(),
-                employeeDTO.getAddress());
+    @Override
+    public boolean add(EmployeeDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO employee(userId, empId, empName, gender, email, nic, address) VALUES(?, ?, ?, ?, ?, ?, ?)" , dto.getUserId(), dto.getId(), dto.getName(), dto.getGender(), dto.getEmail(), dto.getNic(), dto.getAddress());
     }
 
-
-
-    public static EmployeeDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM employee WHERE empId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        ResultSet resultSet = pstm.executeQuery();
-        if (resultSet.next()) {
-            return new EmployeeDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4),
-                    resultSet.getString(5),
-                    resultSet.getString(6),
-                    resultSet.getString(7)
-            );
+    @Override
+    public EmployeeDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM employee WHERE empId = ?", id);
+        if (rst.next()) {
+            return new EmployeeDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6), rst.getString(7));
         }
         return null;
     }
 
-    public static List<EmployeeDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM employee";
-        List<EmployeeDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-        // ResultSet resultSet = CrudUtil.execute(sql);
-
-        while (resultSet.next()) {
-            data.add(new EmployeeDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4),
-                    resultSet.getString(5),
-                    resultSet.getString(6),
-                    resultSet.getString(7)
-            ));
+    @Override
+    public ArrayList<EmployeeDTO> getAll() throws SQLException {
+        ArrayList<EmployeeDTO> allEmployeeDetails = new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM employee");
+        while (rst.next()) {
+            allEmployeeDetails.add(new EmployeeDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6), rst.getString(7)));
         }
-        return data;
+        return allEmployeeDetails;
     }
+
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute("SELECT empId FROM employee ORDER BY empId DESC LIMIT 1;");
+        if (rst.next()) {
+            String id = rst.getString("id");
+            int newEmployeeId = Integer.parseInt(id.replace("E00-", "")) + 1;
+            return String.format("E00-%03d", newEmployeeId);
+        } else {
+            return "E00-001";
+        }    }
 }

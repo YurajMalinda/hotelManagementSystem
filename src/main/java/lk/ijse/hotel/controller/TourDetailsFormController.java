@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,15 +12,20 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.custom.TourBO;
 import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.TourDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.TourDetailsDAOImpl;
-import lk.ijse.hotel.view.tdm.TourDetail;
+import lk.ijse.hotel.dto.BookingDTO;
+import lk.ijse.hotel.dto.FoodDTO;
+import lk.ijse.hotel.dto.TourDTO;
+import lk.ijse.hotel.dto.TourDetailDTO;
 import lk.ijse.hotel.view.tdm.TourDetailTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TourDetailsFormController {
@@ -34,6 +40,10 @@ public class TourDetailsFormController {
     public ComboBox cmbTourId;
     public TextField txtAmount;
     public DatePicker txtDate;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
 
     public void initialize() {
         setCellValueFactory();
@@ -41,6 +51,19 @@ public class TourDetailsFormController {
         loadBookingIds();
         loadTourIds();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        cmbTourId.setValue(null);
+        cmbBookingId.setValue(null);
+        txtDate.setValue(null);
+        txtAmount.clear();
+        cmbTourId.setDisable(true);
+        cmbBookingId.setDisable(true);
+        txtDate.setDisable(true);
+        txtAmount.setDisable(true);
+        txtDate.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -56,31 +79,27 @@ public class TourDetailsFormController {
 
     private void loadBookingIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = BookingDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<BookingDTO> allBookings = bookingBO.getAllBookings();
+            for (BookingDTO c : allBookings) {
+                cmbBookingId.getItems().add(c.getBookingId());
             }
-            cmbBookingId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
     private void loadTourIds() {
         try {
-            ObservableList<String> obList = FXCollections.observableArrayList();
-            List<String> ids = TourDAOImpl.loadIds();
-
-            for (String id : ids) {
-                obList.add(id);
+            ArrayList<TourDTO> allTours = tourBO.getAllTours();
+            for (TourDTO c : allTours) {
+                cmbTourId.getItems().add(c.getId());
             }
-            cmbTourId.setItems(obList);
         } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-            new Alert(Alert.AlertType.ERROR, "SQL Error!").show();
         }
     }
 
@@ -95,15 +114,10 @@ public class TourDetailsFormController {
     private void getAll() {
         try {
             ObservableList<TourDetailTM> obList = FXCollections.observableArrayList();
-            List<TourDetail> tourDetailsList = TourDetailsDAOImpl.getAll();
+            List<TourDetailDTO> tourDetailsList = TourDetailsDAOImpl.getAll();
 
-            for (TourDetail tourDetail : tourDetailsList) {
-                obList.add(new TourDetailTM(
-                        tourDetail.getBookingId(),
-                        tourDetail.getTourId(),
-                        tourDetail.getAmount(),
-                        tourDetail.getDate()
-                ));
+            for (TourDetailDTO tourDetail : tourDetailsList) {
+                obList.add(new TourDetailTM(tourDetail.getBookingId(), tourDetail.getTourId(), tourDetail.getAmount(), tourDetail.getDate()));
             }
             tblTourDetails.setItems(obList);
         } catch (SQLException e) {
@@ -151,11 +165,10 @@ public class TourDetailsFormController {
             LocalDate selectedDate = txtDate.getValue();
             String date=selectedDate.toString();
 
-            // Validate fields
-            validateFields(bookingId, tourId, amount, date);
-
-            TourDetail tourDetail= new TourDetail(bookingId,tourId, amount, date);
-            boolean isUpdated = TourDetailsDAOImpl.update(tourDetail);
+            if (bookingId.isEmpty() || tourId.isEmpty() || amount.isEmpty() || date.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
+            boolean isUpdated = TourDetailsDAOImpl.update(new TourDetailDTO(bookingId,tourId, amount, date));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details updated!").show();
                 getAll();
@@ -169,7 +182,6 @@ public class TourDetailsFormController {
     }
 
     public void btnAddOnAction(ActionEvent actionEvent) {
-
         try {
             String bookingId = (String) cmbBookingId.getValue();
             String tourId = (String) cmbTourId.getValue();
@@ -177,11 +189,11 @@ public class TourDetailsFormController {
             LocalDate selectedDate = txtDate.getValue();
             String date=selectedDate.toString();
 
-            // Validate fields
-            validateFields(bookingId, tourId, amount, date);
+            if (bookingId.isEmpty() || tourId.isEmpty() || amount.isEmpty() || date.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            TourDetail tourDetail= new TourDetail(bookingId,tourId, amount, date);
-            boolean isSaved = TourDetailsDAOImpl.add(tourDetail);
+            boolean isSaved = TourDetailsDAOImpl.add(new TourDetailDTO(bookingId,tourId, amount, date));
             if(isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details saved!").show();
                 getAll();
@@ -194,19 +206,16 @@ public class TourDetailsFormController {
         }
     }
 
-    public void validateFields(String bookingId, String tourId, String amount, String date) {
-        // Check if all the required fields are not empty
-        if (bookingId.isEmpty() || tourId.isEmpty() || amount.isEmpty() || date.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
         cmbTourId.setValue(null);
         cmbBookingId.setValue(null);
         txtDate.setValue(null);
         txtAmount.clear();
+        cmbTourId.setDisable(false);
+        cmbBookingId.setDisable(false);
+        txtDate.setDisable(false);
+        txtAmount.setDisable(false);
+        cmbBookingId.requestFocus();
+        tblTourDetails.getSelectionModel().clearSelection();
     }
-
-
 }

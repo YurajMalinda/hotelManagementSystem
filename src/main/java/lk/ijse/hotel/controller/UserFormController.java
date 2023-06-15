@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,11 +33,28 @@ public class UserFormController {
     public AnchorPane userPane;
     public TextField txtTitle;
     public TableColumn colTitle;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
 
     public void initialize() {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtName.clear();
+        txtPassword.clear();
+        txtTitle.clear();
+        txtId.setDisable(true);
+        txtName.setDisable(true);
+        txtPassword.setDisable(true);
+        txtTitle.setDisable(true);
+        txtTitle.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -114,8 +132,10 @@ public class UserFormController {
         String password =txtPassword.getText();
         String title = txtTitle.getText();
 
+        validateFields(id, name, password, title);
+
         try {
-            boolean isUpdated = UserDAOImpl.update(id, name, password, title);
+            boolean isUpdated = UserDAOImpl.update(new UserDTO(id, name, password, title));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User updated!").show();
                 getAll();
@@ -139,9 +159,7 @@ public class UserFormController {
             // Validate user ID
             validateUserId(id);
 
-            UserDTO userDTO = new UserDTO(id, name, password, title);
-
-            boolean isSaved = UserDAOImpl.add(userDTO);
+            boolean isSaved = UserDAOImpl.add(new UserDTO(id, name, password, title));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User saved!").show();
                 getAll();
@@ -168,15 +186,6 @@ public class UserFormController {
         }
     }
 
-
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtName.clear();
-        txtPassword.clear();
-        txtTitle.clear();
-    }
-
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
             UserDTO userDTO = UserDAOImpl.search(txtId.getText());
@@ -191,5 +200,18 @@ public class UserFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtName.clear();
+        txtPassword.clear();
+        txtTitle.clear();
+        txtId.setDisable(false);
+        txtName.setDisable(false);
+        txtPassword.setDisable(false);
+        txtTitle.setDisable(false);
+        txtId.requestFocus();
+        tblUser.getSelectionModel().clearSelection();
     }
 }

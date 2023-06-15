@@ -1,92 +1,57 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.TourDTO;
+
+import lk.ijse.hotel.dao.custom.TourDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.dto.TourDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class TourDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM tour WHERE tourId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        return pstm.executeUpdate() > 0;
+public class TourDAOImpl implements TourDAO {
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM tour WHERE tourId = ?", id);
     }
 
-    public static boolean add(TourDTO tourDTO) throws SQLException {
-        String sql = "INSERT INTO tour(tourId, tourName, tourDetails, Price) " +
-                "VALUES(?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                tourDTO.getId(),
-                tourDTO.getName(),
-                tourDTO.getDetails(),
-                tourDTO.getPrice());
+    @Override
+    public boolean update(TourDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE tour SET tourName = ?, tourDetails = ?, price = ? WHERE tourId = ?", dto.getName(), dto.getDetails(), dto.getPrice(), dto.getId());
     }
 
-    public static boolean update(String id, String name, String details, Double price) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "UPDATE tour SET tourName = ?, tourDetails = ?, price = ? WHERE tourId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, name);
-        pstm.setString(2, details);
-        pstm.setDouble(3, price);
-        pstm.setString(4, id);
-
-        return pstm.executeUpdate() > 0;
+    @Override
+    public boolean add(TourDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO tour(tourId, tourName, tourDetails, Price) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getDetails(), dto.getPrice());
     }
 
-    public static TourDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM tour WHERE tourId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        ResultSet resultSet = pstm.executeQuery();
-        if(resultSet.next()) {
-            return new TourDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
-            );
+    @Override
+    public TourDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM tour WHERE tourId = ?", id);
+        if(rst.next()) {
+            return new TourDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getDouble(4));
         }
         return null;
     }
 
-    public static List<TourDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM tour";
-        List<TourDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-        // ResultSet resultSet = CrudUtil.execute(sql);
-
-        while (resultSet.next()) {
-            data.add(new TourDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
-            ));
+    @Override
+    public ArrayList<TourDTO> getAll() throws SQLException {
+        ArrayList<TourDTO> allTourDetails = new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM tour");
+        while (rst.next()) {
+            allTourDetails.add(new TourDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getDouble(4)));
         }
-        return data;
+        return allTourDetails;
     }
 
-    public static List<String> loadIds() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        ResultSet resultSet = con.createStatement().executeQuery("SELECT tourId FROM tour");
-
-        List<String> data = new ArrayList<>();
-
-        while (resultSet.next()) {
-            data.add(resultSet.getString(1));
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute("SELECT tourId FROM tour ORDER BY tourId DESC LIMIT 1;");
+        if (rst.next()) {
+            String id = rst.getString("tourId");
+            int newTourId = Integer.parseInt(id.replace("T00-", "")) + 1;
+            return String.format("T00-%03d", newTourId);
+        } else {
+            return "T00-001";
         }
-        return data;
     }
 }

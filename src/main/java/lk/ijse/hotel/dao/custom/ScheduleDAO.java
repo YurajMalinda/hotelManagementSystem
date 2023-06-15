@@ -1,4 +1,7 @@
 package lk.ijse.hotel.dao.custom;
 
-public interface ScheduleDAO {
+import lk.ijse.hotel.dao.CrudDAO;
+import lk.ijse.hotel.dto.ScheduleDTO;
+
+public interface ScheduleDAO extends CrudDAO<ScheduleDTO, String> {
 }

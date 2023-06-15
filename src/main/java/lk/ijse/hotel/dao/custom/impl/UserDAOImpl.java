@@ -1,88 +1,52 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.UserDTO;
+import lk.ijse.hotel.dao.custom.UserDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.dto.UserDTO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class UserDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM user WHERE userId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        return pstm.executeUpdate() > 0;
+public class UserDAOImpl implements UserDAO {
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM user WHERE userId = ?", id);
     }
 
-
-    public static boolean update(String id, String name, String password, String title) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "UPDATE user SET userName = ?, password = ?, title = ? WHERE userId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, name);
-        pstm.setString(2, password);
-        pstm.setString(3, title);
-        pstm.setString(4, id);
-
-        return pstm.executeUpdate() > 0;
+    @Override
+    public boolean update(UserDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE user SET userName = ?, password = ?, title = ? WHERE userId = ?", dto.getName(), dto.getPassword(), dto.getTitle(), dto.getId());
     }
 
-
-    public static boolean add(UserDTO userDTO) throws SQLException {
-        String sql = "INSERT INTO User(userId, userName, password, title) " +
-                "VALUES(?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                userDTO.getId(),
-                userDTO.getName(),
-                userDTO.getPassword(),
-                userDTO.getTitle());
+    @Override
+    public boolean add(UserDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO User(userId, userName, password, title) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getPassword(), dto.getTitle());
     }
 
-    public static UserDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM user WHERE userId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        ResultSet resultSet = pstm.executeQuery();
-        if(resultSet.next()) {
-            return new UserDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4)
-
-                    );
+    @Override
+    public UserDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM user WHERE userId = ?", id);
+        if(rst.next()) {
+            return new UserDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
         }
         return null;
     }
 
-    public static List<UserDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM user";
-        List<UserDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-        // ResultSet resultSet = CrudUtil.execute(sql);
-
-        while (resultSet.next()) {
-            data.add(new UserDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4)
-
-                    ));
+    @Override
+    public ArrayList<UserDTO> getAll() throws SQLException {
+        ArrayList<UserDTO> allUserDetails = new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM user");
+        while (rst.next()) {
+            allUserDetails.add(new UserDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
         }
-        return data;
+        return allUserDetails;
+    }
+
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
     }
 }
 

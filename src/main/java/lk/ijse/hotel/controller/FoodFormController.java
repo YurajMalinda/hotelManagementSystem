@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,17 +12,20 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.dao.CrudDAO;
 import lk.ijse.hotel.dao.custom.impl.FoodDAOImpl;
 import lk.ijse.hotel.dto.FoodDTO;
+import lk.ijse.hotel.view.tdm.EmployeeTM;
 import lk.ijse.hotel.view.tdm.FoodTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class FoodFormController {
     public TextField txtId;
-    public TextArea txtDetails;
     public TextField txtName;
     public TextField txtPrice;
     public TableColumn colId;
@@ -29,13 +33,37 @@ public class FoodFormController {
     public TableColumn colDetails;
     public TableColumn colPrice;
     public TableView <FoodTM> tblFood;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
+    public TextField txtDetails;
     @FXML
     private AnchorPane foodPane;
+
+    CrudDAO crudDAO = new FoodDAOImpl();
 
     public void initialize() {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setEditable(false);
+        txtId.setDisable(true);
+        txtPrice.setDisable(true);
+        txtDetails.setDisable(true);
+        txtName.setDisable(true);
+        btnAdd.setDisable(true);
+        btnDelete.setDisable(true);
+        btnUpdate.setDisable(true);
+        txtPrice.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -61,7 +89,7 @@ public class FoodFormController {
     private void getAll() {
         try {
             ObservableList<FoodTM> obList = FXCollections.observableArrayList();
-            List<FoodDTO> foodDTOList = FoodDAOImpl.getAll();
+            List<FoodDTO> foodDTOList = crudDAO.getAll();
 
             for (FoodDTO foodDTO : foodDTOList) {
                 obList.add(new FoodTM(
@@ -99,7 +127,7 @@ public class FoodFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = FoodDAOImpl.delete(id);
+            boolean isDeleted = crudDAO.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -115,8 +143,12 @@ public class FoodFormController {
         String details =txtDetails.getText();
         Double price = Double.parseDouble(txtPrice.getText());
 
+        if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
+            throw new IllegalArgumentException("Please fill out all the required fields!");
+        }
+
         try {
-            boolean isUpdated = FoodDAOImpl.update(id, name, details, price);
+            boolean isUpdated = crudDAO.update(new FoodDTO(id, name, details, price));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food updated!").show();
                 getAll();
@@ -133,15 +165,12 @@ public class FoodFormController {
             String name = txtName.getText();
             String details =txtDetails.getText();
             Double price = Double.parseDouble(txtPrice.getText());
-    
-            // Validate fields
-            validateFields(id, name, details);
-    
-            // Validate food ID
-            validateFoodId(id);
-    
-            FoodDTO foodDTO = new FoodDTO(id, name, details, price);
-            boolean isSaved = FoodDAOImpl.add(foodDTO);
+
+            if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
+
+            boolean isSaved = crudDAO.add(new FoodDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food saved!").show();
                 getAll();
@@ -153,31 +182,9 @@ public class FoodFormController {
         }
     }
 
-    public void validateFields(String id, String name, String details) {
-        // Check if all the required fields are not empty
-        if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void validateFoodId(String id) {
-        // Check if employee ID is valid using a regular expression
-        String employeeIdRegex = "^F\\d+$";
-        if (!id.matches(employeeIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid food ID starting with 'F' followed by one or more digits (e.g. F123)!");
-        }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtPrice.clear();
-        txtDetails.clear();
-        txtName.clear();
-    }
-
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            FoodDTO foodDTO = FoodDAOImpl.search(txtId.getText());
+            FoodDTO foodDTO = (FoodDTO) crudDAO.search(txtId.getText());
             if (foodDTO != null) {
                 txtId.setText(foodDTO.getId());
                 txtName.setText(foodDTO.getName());
@@ -187,5 +194,47 @@ public class FoodFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    private String generateNewFoodId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (tblFood.getItems().isEmpty()) {
+            return "F00-001";
+        } else {
+            String id = getLastFoodId();
+            int newFoodId = Integer.parseInt(id.replace("F", "")) + 1;
+            return String.format("F00-%03d", newFoodId);
+        }
+    }
+
+    private String getLastFoodId() {
+        List<FoodTM> tempFoodList = new ArrayList<>(tblFood.getItems());
+        Collections.sort(tempFoodList);
+        return tempFoodList.get(tempFoodList.size() - 1).getId();
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setEditable(false);
+        txtId.setText(generateNewFoodId());
+        txtName.requestFocus();
+        txtId.setDisable(false);
+        txtPrice.setDisable(false);
+        txtDetails.setDisable(false);
+        txtName.setDisable(false);
+        btnAdd.setDisable(false);
+        btnDelete.setDisable(false);
+        btnUpdate.setDisable(false);
+        tblFood.getSelectionModel().clearSelection();
     }
 }

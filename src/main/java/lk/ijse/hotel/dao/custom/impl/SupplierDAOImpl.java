@@ -1,91 +1,58 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
+
+import lk.ijse.hotel.dao.custom.SupplierDAO;
 import lk.ijse.hotel.dto.SupplierDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
-public class SupplierDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM supplier WHERE supId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
 
-        return pstm.executeUpdate() > 0;
-
+public class SupplierDAOImpl implements SupplierDAO{
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM supplier WHERE supId = ?", id);
     }
 
-//    public static boolean update(String id, String name, String contact, String details) throws SQLException {
-//        Connection con = DBConnection.getInstance().getConnection();
-//        String sql = "UPDATE supplier SET supName = ?, supContact = ?, supplyDetail = ? WHERE supId = ?";
-//        PreparedStatement pstm = con.prepareStatement(sql);
-//        pstm.setString(1, name);
-//        pstm.setString(2, contact);
-//        pstm.setString(3, details);
-//        pstm.setString(4, id);
-//
-//        return pstm.executeUpdate() > 0;
-//    }
-
-    public static boolean update(SupplierDTO supplierDTO) throws SQLException {
-        String sql = "UPDATE supplier SET supName = ?, supContact = ?, supplyDetail = ? WHERE supId = ?";
-
-        return SQLUtil.execute(
-                sql,
-                supplierDTO.getName(),
-                supplierDTO.getContact(),
-                supplierDTO.getDetails(),
-                supplierDTO.getId());
-    }
-    public static boolean add(SupplierDTO supplierDTO) throws SQLException {
-        String sql = "INSERT INTO supplier(supId, supName, supContact, supplyDetail) " +
-                "VALUES(?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                supplierDTO.getId(),
-                supplierDTO.getName(),
-                supplierDTO.getContact(),
-                supplierDTO.getDetails());
+    @Override
+    public boolean update(SupplierDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE supplier SET supName = ?, supContact = ?, supplyDetail = ? WHERE supId = ?", dto.getName(), dto.getContact(), dto.getDetails(), dto.getId());
     }
 
-    public static SupplierDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM supplier WHERE supId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
+    @Override
+    public boolean add(SupplierDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO supplier(supId, supName, supContact, supplyDetail) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getContact(), dto.getDetails());
+    }
 
-        ResultSet resultSet = pstm.executeQuery();
-        if(resultSet.next()) {
-            return new SupplierDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4)
-            );
+    @Override
+    public SupplierDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM supplier WHERE supId = ?", id);
+        if(rst.next()) {
+            return new SupplierDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
         }
         return null;
     }
 
-    public static List<SupplierDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM supplier";
-        List<SupplierDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-        // ResultSet resultSet = CrudUtil.execute(sql);
-
-        while (resultSet.next()) {
-            data.add(new SupplierDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getString(4)
-            ));
+    @Override
+    public ArrayList<SupplierDTO> getAll() throws SQLException {
+        ArrayList<SupplierDTO> allSupplierDetails = new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM supplier");
+        while (rst.next()) {
+            allSupplierDetails.add(new SupplierDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
         }
-        return data;
+        return allSupplierDetails;
+    }
+
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute("SELECT supId FROM supplier ORDER BY supId DESC LIMIT 1;");
+        if (rst.next()) {
+            String id = rst.getString("supId");
+            int newSupId = Integer.parseInt(id.replace("SP0-", "")) + 1;
+            return String.format("SP0-%03d", newSupId);
+        } else {
+            return "SP0-001";
+        }
     }
 }

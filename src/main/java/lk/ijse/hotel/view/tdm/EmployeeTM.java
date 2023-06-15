@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @ToString
 
-public class EmployeeTM {
+public class EmployeeTM implements Comparable<EmployeeTM> {
     private String userId;
     private String id;
     private String name;
@@ -16,4 +16,9 @@ public class EmployeeTM {
     private String email;
     private String nic;
     private String address;
+
+    @Override
+    public int compareTo(EmployeeTM o) {
+        return id.compareTo(o.id);
+    }
 }

@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,23 +13,30 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.SupplierDTO;
+import lk.ijse.hotel.view.tdm.RoomTM;
 import lk.ijse.hotel.view.tdm.SupplierTM;
 import lk.ijse.hotel.dao.custom.impl.SupplierDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SupplierFormController {
     public TextField txtId;
     public TextField txtName;
     public TextField txtContact;
-    public TextArea txtDetails;
     public TableColumn<Object, Object> colId;
     public TableColumn colName;
     public TableColumn colDetails;
     public TableColumn colContact;
     public TableView<SupplierTM> tblSupplier;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
+    public TextField txtDetails;
     @FXML
     private AnchorPane supplierPane;
 
@@ -36,6 +44,20 @@ public class SupplierFormController {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtDetails.clear();
+        txtContact.clear();
+        txtName.clear();
+        txtId.setDisable(true);
+        txtDetails.setDisable(true);
+        txtName.setDisable(true);
+        txtContact.setDisable(true);
+        txtId.setEditable(false);
+        txtDetails.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -101,8 +123,7 @@ public class SupplierFormController {
             boolean isDeleted = SupplierDAOImpl.delete(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
-                //        setCellValueFactory();
-                //        getAll();
+                getAll();
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
@@ -116,20 +137,14 @@ public class SupplierFormController {
             String contact =txtContact.getText();
             String details = txtDetails.getText();
 
-            // Validate fields
-            validateFields(id, name, contact, details);
+            if (id.isEmpty() || name.isEmpty() || contact.isEmpty() || details.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            // Validate Supplier ID
-            validateSupplierId(id);
-
-            SupplierDTO supplierDTO = new SupplierDTO(id, name, contact, details);
-
-//            boolean isUpdated = SupplierModel.update(id, name, contact, details);
-            boolean isUpdated = SupplierDAOImpl.update(supplierDTO);
+            boolean isUpdated = SupplierDAOImpl.update(new SupplierDTO(id, name, contact, details));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier updated!").show();
-                //        setCellValueFactory();
-                //        getAll();
+                getAll();
             }
         } catch (IllegalArgumentException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
@@ -146,48 +161,20 @@ public class SupplierFormController {
             String contact =txtContact.getText();
             String details = txtDetails.getText();
 
-            // Validate fields
-            validateFields(id, name, contact, details);
+            if (id.isEmpty() || name.isEmpty() || contact.isEmpty() || details.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            // Validate supplier ID
-            validateSupplierId(id);
-
-            SupplierDTO supplierDTO = new SupplierDTO(id, name, contact, details);
-
-//            boolean isSaved = ItemModel.save(code, description, unitPrice, qtyOnHand);
-            boolean isSaved = SupplierDAOImpl.add(supplierDTO);
+            boolean isSaved = SupplierDAOImpl.add(new SupplierDTO(id, name, contact, details));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier saved!").show();
-                //        setCellValueFactory();
-                //        getAll();
+                getAll();
             }
         } catch (IllegalArgumentException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
-    }
-
-    public void validateFields(String id, String name, String contact, String details) {
-        // Check if all the required fields are not empty
-        if (id.isEmpty() || name.isEmpty() || contact.isEmpty() || details.isEmpty()) {
-            throw new IllegalArgumentException("Please fill out all the required fields!");
-        }
-    }
-
-    public void validateSupplierId(String id) {
-        // Check if booking ID is valid using a regular expression
-        String scheduleIdRegex = "^S\\d+$";
-        if (!id.matches(scheduleIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid schedule ID starting with 'S' followed by one or more digits (e.g. S123)!");
-        }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtName.clear();
-        txtContact.clear();
-        txtDetails.clear();
     }
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
@@ -202,5 +189,45 @@ public class SupplierFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtName.clear();
+        txtContact.clear();
+        txtDetails.clear();
+        txtId.setDisable(false);
+        txtId.setText(generateNewSupplierId());
+        txtName.requestFocus();
+        txtDetails.setDisable(false);
+        txtName.setDisable(false);
+        txtContact.setDisable(false);
+        txtId.setEditable(false);
+        tblSupplier.getSelectionModel().clearSelection();
+    }
+
+    private String generateNewSupplierId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        if (tblSupplier.getItems().isEmpty()) {
+            return "SP0-001";
+        } else {
+            String id = getLastSupplierId();
+            int newSupId = Integer.parseInt(id.replace("S", "")) + 1;
+            return String.format("SP0-%03d", newSupId);
+        }
+    }
+
+    private String getLastSupplierId() {
+        List<SupplierTM> tempSupList = new ArrayList<>(tblSupplier.getItems());
+        Collections.sort(tempSupList);
+        return tempSupList.get(tempSupList.size() - 1).getId();
     }
 }

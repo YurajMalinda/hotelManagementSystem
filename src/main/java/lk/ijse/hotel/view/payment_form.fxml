@@ -47,10 +47,10 @@
         </TableView>
         <Accordion />
         <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="604.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Back" />
-        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="565.0" layoutY="313.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
-        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="474.0" layoutY="312.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
-        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="407.0" layoutY="312.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
-        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="644.0" layoutY="313.0" onAction="#btnClearOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Clear" />
+        <JFXButton fx:id="btnDelete" buttonType="RAISED" focusTraversable="false" layoutX="565.0" layoutY="313.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
+        <JFXButton fx:id="btnUpdate" buttonType="RAISED" focusTraversable="false" layoutX="474.0" layoutY="312.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
+        <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="407.0" layoutY="312.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
+        <JFXButton fx:id="btnAddNew" buttonType="RAISED" focusTraversable="false" layoutX="644.0" layoutY="313.0" onAction="#btnAddNewOnAction" prefHeight="31.0" prefWidth="135.0" ripplerFill="#d31919" styleClass="button-update" text="+ New Payment" />
         <Label focusTraversable="false" layoutX="75.0" layoutY="189.0" styleClass="text-field" text="Check In - ">
             <font>
                 <Font size="15.0" />

@@ -1,5 +1,6 @@
 package lk.ijse.hotel.controller;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,24 +13,31 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import lk.ijse.hotel.dto.TourDTO;
+import lk.ijse.hotel.view.tdm.RoomTM;
 import lk.ijse.hotel.view.tdm.TourTM;
 import lk.ijse.hotel.dao.custom.impl.TourDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TourFormController {
 
     public TextField txtId;
     public TextField txtName;
-    public TextArea txtDetails;
     public TextField txtPrice;
     public TableColumn colId;
     public TableColumn colName;
     public TableColumn colDetails;
     public TableColumn colPrice;
     public TableView<TourTM> tblTour;
+    public JFXButton btnDelete;
+    public JFXButton btnUpdate;
+    public JFXButton btnAdd;
+    public JFXButton btnAddNew;
+    public TextField txtDetails;
     @FXML
     private AnchorPane tourPane;
 
@@ -37,6 +45,20 @@ public class TourFormController {
         setCellValueFactory();
         getAll();
         setSelectToTxt();
+        initUI();
+    }
+
+    private void initUI() {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setDisable(true);
+        txtPrice.setDisable(true);
+        txtDetails.setDisable(true);
+        txtName.setDisable(true);
+        txtId.setEditable(false);
+        txtPrice.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -115,8 +137,12 @@ public class TourFormController {
         String details =txtDetails.getText();
         Double price = Double.parseDouble(txtPrice.getText());
 
+        if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
+            throw new IllegalArgumentException("Please fill out all the required fields!");
+        }
+
         try {
-            boolean isUpdated = TourDAOImpl.update(id, name, details, price);
+            boolean isUpdated = TourDAOImpl.update(new TourDTO(id, name, details, price));
             if (isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour updated!").show();
                 getAll();
@@ -135,14 +161,11 @@ public class TourFormController {
             String details =txtDetails.getText();
             Double price = Double.parseDouble(txtPrice.getText());
 
-            // Validate fields
-            validateFields(id, name, details);
+            if (id.isEmpty() || name.isEmpty() || details.isEmpty()) {
+                throw new IllegalArgumentException("Please fill out all the required fields!");
+            }
 
-            // Validate Tour ID
-            validateTourId(id);
-
-            TourDTO tourDTO = new TourDTO(id, name, details, price);
-            boolean isSaved = TourDAOImpl.add(tourDTO);
+            boolean isSaved = TourDAOImpl.add(new TourDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour saved!").show();
                 getAll();
@@ -161,21 +184,6 @@ public class TourFormController {
         }
     }
 
-    public void validateTourId(String id) {
-        // Check if booking ID is valid using a regular expression
-        String tourIdRegex = "^T\\d+$";
-        if (!id.matches(tourIdRegex)) {
-            throw new IllegalArgumentException("Please enter a valid schedule ID starting with 'S' followed by one or more digits (e.g. S123)!");
-        }
-    }
-
-    public void btnClearOnAction(ActionEvent actionEvent) {
-        txtId.clear();
-        txtPrice.clear();
-        txtDetails.clear();
-        txtName.clear();
-    }
-
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
             TourDTO tourDTO = TourDAOImpl.search(txtId.getText());
@@ -188,5 +196,45 @@ public class TourFormController {
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "something happened!").show();
         }
+    }
+
+    public void btnAddNewOnAction(ActionEvent actionEvent) {
+        txtId.clear();
+        txtPrice.clear();
+        txtDetails.clear();
+        txtName.clear();
+        txtId.setDisable(false);
+        txtId.setText(generateNewTourId());
+        txtName.requestFocus();
+        txtPrice.setDisable(false);
+        txtDetails.setDisable(false);
+        txtName.setDisable(false);
+        txtId.setEditable(false);
+        tblTour.getSelectionModel().clearSelection();
+    }
+
+    private String generateNewTourId() {
+        try {
+            return crudDAO.generateNewID();
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+        if (tblTour.getItems().isEmpty()) {
+            return "T00-001";
+        } else {
+            String id = getLastTourId();
+            int newTourId = Integer.parseInt(id.replace("T", "")) + 1;
+            return String.format("T00-%03d", newTourId);
+        }
+    }
+
+    private String getLastTourId() {
+        List<TourTM> tempTourList = new ArrayList<>(tblTour.getItems());
+        Collections.sort(tempTourList);
+        return tempTourList.get(tempTourList.size() - 1).getId();
     }
 }

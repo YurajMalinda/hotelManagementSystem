@@ -96,12 +96,12 @@
          </font>
       </Label>
       <Label fx:id="lblPrice" focusTraversable="false" layoutX="519.0" layoutY="219.0" prefHeight="31.0" prefWidth="187.0" />
-      <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="677.0" layoutY="317.0" onAction="#btnAddToCartOnAction" styleClass="button-update" text="Add To Cart">
+      <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="677.0" layoutY="317.0" onAction="#btnAddToCartOnAction" styleClass="button-update" text="Add To Cart">
          <font>
             <Font name="System Bold" size="15.0" />
          </font>
       </JFXButton>
-      <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="317.0" onAction="#btnPlaceOrderOnAction" styleClass="button-update" text="Place Order">
+      <JFXButton fx:id="btnPlaceOrder" buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="317.0" onAction="#btnPlaceOrderOnAction" styleClass="button-update" text="Place Order">
          <font>
             <Font name="System Bold" size="15.0" />
          </font></JFXButton>

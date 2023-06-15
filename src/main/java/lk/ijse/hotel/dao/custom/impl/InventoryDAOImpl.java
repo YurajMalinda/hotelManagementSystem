@@ -1,83 +1,59 @@
 package lk.ijse.hotel.dao.custom.impl;
 
-import lk.ijse.hotel.db.DBConnection;
+
+import lk.ijse.hotel.dao.custom.InventoryDAO;
 import lk.ijse.hotel.dto.InventoryDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
-public class InventoryDAOImpl {
-    public static boolean delete(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "DELETE FROM inventory WHERE itemId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
 
-        return pstm.executeUpdate() > 0;
+public class InventoryDAOImpl implements InventoryDAO {
+    @Override
+    public boolean delete(String id) throws SQLException {
+        return SQLUtil.execute("DELETE FROM inventory WHERE itemId = ?", id);
     }
 
-    public static boolean update(String id, String name, String details, Double price) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "UPDATE inventory SET itemName = ?, itemDetails = ?, itemPrice = ? WHERE itemId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, name);
-        pstm.setString(2, details);
-        pstm.setDouble(3, price);
-        pstm.setString(4, id);
-
-        return pstm.executeUpdate() > 0;
+    @Override
+    public boolean update(InventoryDTO dto) throws SQLException {
+        return SQLUtil.execute("UPDATE inventory SET itemName = ?, itemDetails = ?, itemPrice = ? WHERE itemId = ?", dto.getName(), dto.getDetails(), dto.getPrice(), dto.getId());
     }
 
-    public static boolean add(InventoryDTO inventoryDTO) throws SQLException {
-        String sql = "INSERT INTO inventory(itemId, itemName, itemDetails, itemPrice) " +
-                "VALUES(?, ?, ?, ?)";
-        return SQLUtil.execute(
-                sql,
-                inventoryDTO.getId(),
-                inventoryDTO.getName(),
-                inventoryDTO.getDetails(),
-                inventoryDTO.getPrice());
+    @Override
+    public boolean add(InventoryDTO dto) throws SQLException {
+        return SQLUtil.execute("INSERT INTO inventory(itemId, itemName, itemDetails, itemPrice) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getDetails(), dto.getPrice());
     }
 
-    public static InventoryDTO search(String id) throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM inventory WHERE itemId = ?";
-        PreparedStatement pstm = con.prepareStatement(sql);
-        pstm.setString(1, id);
-
-        ResultSet resultSet = pstm.executeQuery();
-        if(resultSet.next()) {
-            return new InventoryDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
-            );
+    @Override
+    public InventoryDTO search(String id) throws SQLException {
+        ResultSet rst = SQLUtil.execute("SELECT * FROM inventory WHERE itemId = ?", id);
+        if(rst.next()) {
+            return new InventoryDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getDouble(4));
         }
         return null;
     }
 
-    public static List<InventoryDTO> getAll() throws SQLException {
-        Connection con = DBConnection.getInstance().getConnection();
-        String sql = "SELECT * FROM inventory";
-        List<InventoryDTO> data = new ArrayList<>();
-
-        ResultSet resultSet = con.prepareStatement(sql).executeQuery();
-        // ResultSet resultSet = CrudUtil.execute(sql);
-
-        while (resultSet.next()) {
-            data.add(new InventoryDTO(
-                    resultSet.getString(1),
-                    resultSet.getString(2),
-                    resultSet.getString(3),
-                    resultSet.getDouble(4)
-            ));
+    @Override
+    public ArrayList<InventoryDTO> getAll() throws SQLException {
+        ArrayList<InventoryDTO> allInventoryDetails = new ArrayList<>();
+        ResultSet rst = SQLUtil.execute("SELECT * FROM inventory");
+        while (rst.next()) {
+            allInventoryDetails.add(new InventoryDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getDouble(4)));
         }
-        return data;
+        return allInventoryDetails;
+    }
+
+    @Override
+    public String generateNewID() throws SQLException, ClassNotFoundException {
+        ResultSet rst = SQLUtil.execute("SELECT itemId FROM inventory ORDER BY itemId DESC LIMIT 1;");
+        if (rst.next()) {
+            String id = rst.getString("id");
+            int newInventoryId = Integer.parseInt(id.replace("I00-", "")) + 1;
+            return String.format("I00-%03d", newInventoryId);
+        } else {
+            return "I00-001";
+        }
     }
 }
