@@ -13,15 +13,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.bo.custom.impl.OrderBOImpl;
-import lk.ijse.hotel.dao.CrudDAO;
-import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
-import lk.ijse.hotel.dao.custom.impl.FoodDAOImpl;
-import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.BookingBO;
+import lk.ijse.hotel.bo.custom.FoodBO;
+import lk.ijse.hotel.bo.custom.GuestBO;
+import lk.ijse.hotel.bo.custom.OrderBO;
 import lk.ijse.hotel.dto.*;
-import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.OrderTM;
-import lk.ijse.hotel.dao.custom.impl.OrderDAOImpl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -58,7 +56,10 @@ public class OrderFormController implements Initializable {
     public JFXButton btnPlaceOrder;
     private ObservableList<OrderTM> obList = FXCollections.observableArrayList();
 
-    CrudDAO crudDAO = new OrderDAOImpl();
+    BookingBO bookingBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.BOOKING_BO);
+    GuestBO guestBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.GUEST_BO);
+    FoodBO foodBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.FOOD_BO);
+    OrderBO orderBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.ORDER_BO);
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loadBookingIds();
@@ -183,40 +184,28 @@ public class OrderFormController implements Initializable {
     }
 
     private boolean saveOrder(String orderId, String date, String bookingId, List<OrderDetailsDTO> orderDetails) {
-        try {
-            return orderBOimpl.saveOrder(new OrderDTO(orderId, date, bookingId, orderDetails));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        return orderBO.saveOrder(new OrderDTO(orderId, date, bookingId, orderDetails));
     }
 
     private void loadBookingIds() {
         try {
-            ArrayList<BookingDTO> allBookings = orderBO.getAllBookings();
+            ArrayList<BookingDTO> allBookings = bookingBO.getAllBookings();
             for (BookingDTO c : allBookings) {
                 cmbBookingId.getItems().add(c.getBookingId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
     private void loadFoodIds() {
         try {
-            ArrayList<FoodDTO> allFoods = orderBO.getAllFoods();
+            ArrayList<FoodDTO> allFoods = foodBO.getAllFoods();
             for (FoodDTO c : allFoods) {
                 cmbFoodId.getItems().add(c.getId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -228,9 +217,9 @@ public class OrderFormController implements Initializable {
     public void bookIdOnAction(ActionEvent actionEvent) {
         String id = cmbBookingId.getValue();
         try {
-            BookingDTO res = (BookingDTO) crudDAO.search(id);
-            String cod = res.getGuestId();
-            GuestDTO ges = (GuestDTO) crudDAO.search(cod);
+            BookingDTO res = (BookingDTO) bookingBO.searchBooking(id);
+            String code = res.getGuestId();
+            GuestDTO ges = (GuestDTO) guestBO.searchGuest(code);
             String gesCode = ges.getName();
             fillBookFields(res,gesCode);
             txtQty.requestFocus();
@@ -249,7 +238,7 @@ public class OrderFormController implements Initializable {
     public void foodIdOnAction(ActionEvent actionEvent) {
         String id = cmbFoodId.getValue();
         try {
-            FoodDTO foodDTO = (FoodDTO) crudDAO.search(id);
+            FoodDTO foodDTO = (FoodDTO) foodBO.searchFood(id);
             fillMealFields(foodDTO);
 
             txtQty.requestFocus();
@@ -264,7 +253,7 @@ public class OrderFormController implements Initializable {
 
     private String generateNewOrderId() {
         try {
-            return crudDAO.generateNewID();
+            return orderBO.generateNewOrderID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {
