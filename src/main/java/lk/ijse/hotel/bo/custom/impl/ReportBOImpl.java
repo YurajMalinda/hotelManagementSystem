@@ -1,4 +1,6 @@
 package lk.ijse.hotel.bo.custom.impl;
 
-public class ReportBOImpl {
+import lk.ijse.hotel.bo.custom.ReportBO;
+
+public class ReportBOImpl implements ReportBO {
 }

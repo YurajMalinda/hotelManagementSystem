@@ -12,10 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.dto.RoomDTO;
-import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.RoomTM;
-import lk.ijse.hotel.dao.custom.impl.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -40,6 +40,8 @@ public class RoomFormController {
     public JFXButton btnAddNew;
     @FXML
     private AnchorPane roomPane;
+    
+    RoomBO roomBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.ROOM_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -85,7 +87,7 @@ public class RoomFormController {
     private void getAll() {
         try {
             ObservableList<RoomTM> obList = FXCollections.observableArrayList();
-            List<RoomDTO> roomDTOList = RoomDAOImpl.getAll();
+            List<RoomDTO> roomDTOList = roomBO.getAllRooms();
 
             for (RoomDTO roomDTO : roomDTOList) {
                 obList.add(new RoomTM(
@@ -123,7 +125,7 @@ public class RoomFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
         String id = txtId.getText();
         try {
-            boolean isDeleted = RoomDAOImpl.delete(id);
+            boolean isDeleted = roomBO.deleteRoom(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -140,7 +142,7 @@ public class RoomFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = RoomDAOImpl.update(new RoomDTO(id, details, roomType, price));
+            boolean isUpdated = roomBO.updateRoom(new RoomDTO(id, details, roomType, price));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Room updated!").show();
                 getAll();
@@ -163,7 +165,7 @@ public class RoomFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = RoomDAOImpl.add(new RoomDTO(id, details, roomType, price));
+            boolean isSaved = roomBO.addRoom(new RoomDTO(id, details, roomType, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Room saved!").show();
                 getAll();
@@ -177,7 +179,7 @@ public class RoomFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            RoomDTO roomDTO = RoomDAOImpl.search(txtId.getText());
+            RoomDTO roomDTO = roomBO.searchRoom(txtId.getText());
             if (roomDTO != null) {
                 txtId.setText(roomDTO.getId());
                 txtDetails.setText(roomDTO.getDetails());
@@ -191,7 +193,7 @@ public class RoomFormController {
 
     private String generateNewRoomId() {
         try {
-            return crudDAO.generateNewID();
+            return roomBO.generateNewRoomID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

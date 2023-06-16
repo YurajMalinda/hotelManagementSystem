@@ -11,10 +11,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.ScheduleBO;
 import lk.ijse.hotel.dto.ScheduleDTO;
-import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.ScheduleTM;
-import lk.ijse.hotel.dao.custom.impl.ScheduleDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,6 +33,8 @@ public class ScheduleFormController {
     public JFXButton btnAdd;
     public JFXButton btnAddNew;
     public TextField txtDetails;
+    
+    ScheduleBO scheduleBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.SCHEDULE_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -67,7 +69,7 @@ public class ScheduleFormController {
     private void getAll () {
         try {
             ObservableList<ScheduleTM> obList = FXCollections.observableArrayList();
-            List<ScheduleDTO> scheduleDTOList = ScheduleDAOImpl.getAll();
+            List<ScheduleDTO> scheduleDTOList = scheduleBO.getAllSchedules();
 
             for (ScheduleDTO scheduleDTO : scheduleDTOList) {
                 obList.add(new ScheduleTM(
@@ -103,7 +105,7 @@ public class ScheduleFormController {
         public void btnDeleteOnAction (ActionEvent actionEvent){
             String id = txtId.getText();
             try {
-                boolean isDeleted = ScheduleDAOImpl.delete(id);
+                boolean isDeleted = scheduleBO.deleteSchedule(id);
                 if (isDeleted) {
                     new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                     getAll();
@@ -122,7 +124,7 @@ public class ScheduleFormController {
                     throw new IllegalArgumentException("Please fill out all the required fields!");
                 }
 
-                boolean isUpdated = ScheduleDAOImpl.update(new ScheduleDTO(id, details));
+                boolean isUpdated = scheduleBO.updateSchedule(new ScheduleDTO(id, details));
                 if(isUpdated) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
                     getAll();
@@ -144,7 +146,7 @@ public class ScheduleFormController {
                     throw new IllegalArgumentException("Please fill out all the required fields!");
                 }
                 // Save booking to database
-                boolean isSaved = ScheduleDAOImpl.add(new ScheduleDTO(id, details));
+                boolean isSaved = scheduleBO.addSchedule(new ScheduleDTO(id, details));
                 if (isSaved) {
                     new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
                     getAll();
@@ -158,7 +160,7 @@ public class ScheduleFormController {
 
         public void codeSearchOnAction (ActionEvent actionEvent){
             try {
-                ScheduleDTO scheduleDTO = ScheduleDAOImpl.search(txtId.getText());
+                ScheduleDTO scheduleDTO = scheduleBO.searchSchedule(txtId.getText());
                 if (scheduleDTO != null) {
                     txtId.setText(scheduleDTO.getId());
                     txtDetails.setText(scheduleDTO.getDetails());
@@ -181,7 +183,7 @@ public class ScheduleFormController {
 
     private String generateNewScheduleId() {
         try {
-            return crudDAO.generateNewID();
+            return scheduleBO.generateNewScheduleID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {
@@ -191,13 +193,13 @@ public class ScheduleFormController {
         if (tblSchedule.getItems().isEmpty()) {
             return "S00-001";
         } else {
-            String id = getLastSheduleId();
+            String id = getLastScheduleId();
             int newScheduleId = Integer.parseInt(id.replace("S", "")) + 1;
             return String.format("S00-%03d", newScheduleId);
         }
     }
 
-    private String getLastSheduleId() {
+    private String getLastScheduleId() {
         List<ScheduleTM> tempScheduleList = new ArrayList<>(tblSchedule.getItems());
         Collections.sort(tempScheduleList);
         return tempScheduleList.get(tempScheduleList.size() - 1).getId();

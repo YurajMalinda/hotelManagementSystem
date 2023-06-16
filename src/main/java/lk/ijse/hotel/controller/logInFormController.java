@@ -1,8 +1,6 @@
 package lk.ijse.hotel.controller;
 
 import com.jfoenix.controls.JFXButton;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -11,9 +9,9 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.LoginBO;
 import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dao.custom.impl.LoginDAOImpl;
-import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.dto.LoginDTO;
 
 import java.io.IOException;
@@ -22,7 +20,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class logInFormController {
@@ -32,6 +29,8 @@ public class logInFormController {
     public JFXButton btnLogin;
     @FXML
     private AnchorPane loginPane;
+
+    LoginBO loginBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.LOGIN_BO);
 
     public void initialize() {
         loadTitles();
@@ -44,14 +43,12 @@ public class logInFormController {
 
     private void loadTitles() {
         try {
-            ArrayList<LoginDTO> allLoginDetails = LoginBO.getAllLoginDetails();
+            ArrayList<LoginDTO> allLoginDetails = loginBO.getAllLogins();
             for (LoginDTO c : allLoginDetails) {
                 cmbTitle.getItems().add(c.getTitle());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load Titles").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 

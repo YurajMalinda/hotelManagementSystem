@@ -13,14 +13,14 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.CrudDAO;
-import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
-import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.BookingBO;
+import lk.ijse.hotel.bo.custom.GuestBO;
+import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.dto.RoomDTO;
 import lk.ijse.hotel.view.tdm.BookingTM;
-import lk.ijse.hotel.dao.custom.impl.RoomDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -54,7 +54,9 @@ public class BookingFormController {
     @FXML
     private AnchorPane bookingPane;
 
-    CrudDAO crudDAO = new BookingDAOImpl();
+    BookingBO bookingBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.BOOKING_BO);
+    RoomBO roomBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.ROOM_BO);
+    GuestBO guestBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.GUEST_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -100,27 +102,23 @@ public class BookingFormController {
 
     private void loadGuestIds() {
         try {
-            ArrayList<GuestDTO> allGuests = bookingBO.getAllGuests();
+            ArrayList<GuestDTO> allGuests = guestBO.getAllGuests();
             for (GuestDTO c : allGuests) {
                 cmbGuestId.getItems().add(c.getId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
     private void loadRoomIds() {
         try {
-            ArrayList<RoomDTO> allRooms = bookingBO.getAllRooms();
+            ArrayList<RoomDTO> allRooms = roomBO.getAllRooms();
             for (RoomDTO c : allRooms) {
                 cmbRoomId.getItems().add(c.getId());
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load booking ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -137,7 +135,7 @@ public class BookingFormController {
     private void getAll() {
         try {
             ObservableList<BookingTM> obList = FXCollections.observableArrayList();
-            List<BookingDTO> bookingDTOList = crudDAO.getAll();
+            List<BookingDTO> bookingDTOList = bookingBO.getAllBookings();
 
             for (BookingDTO bookingDTO : bookingDTOList) {
                 obList.add(new BookingTM(
@@ -190,10 +188,10 @@ public class BookingFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = crudDAO.add(new BookingDTO(guestId, bookingId, bookingDate, roomId, checkIn, checkOut));
+            boolean isSaved = bookingBO.addBooking(new BookingDTO(guestId, bookingId, bookingDate, roomId, checkIn, checkOut));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Booking saved!").show();
-                BookingDAOImpl.releaseRoom(roomId);
+                bookingBO.releaseRoom(roomId);
                 getAll();
             }
         } catch (IllegalArgumentException e) {
@@ -216,7 +214,7 @@ public class BookingFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isUpdated = crudDAO.update(new BookingDTO(guestId, roomId, checkOut, bookingId));
+            boolean isUpdated = bookingBO.updateBooking(new BookingDTO(guestId, roomId, checkOut, bookingId));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Booking updated!").show();
                 getAll();
@@ -233,7 +231,7 @@ public class BookingFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtBookingId.getText();
         try {
-            boolean isDeleted = crudDAO.delete(id);
+            boolean isDeleted = bookingBO.deleteBooking(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                         getAll();
@@ -246,7 +244,7 @@ public class BookingFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            BookingDTO bookingDTO = (BookingDTO) crudDAO.search(txtBookingId.getText());
+            BookingDTO bookingDTO = (BookingDTO) bookingBO.searchBooking(txtBookingId.getText());
             if (bookingDTO != null) {
                 cmbGuestId.setValue(bookingDTO.getGuestId());
                 txtBookingId.setText(bookingDTO.getBookingId());
@@ -262,7 +260,7 @@ public class BookingFormController {
 
     private String generateNewBookingId() {
         try {
-            return crudDAO.generateNewID();
+            return bookingBO.generateNewBookingID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

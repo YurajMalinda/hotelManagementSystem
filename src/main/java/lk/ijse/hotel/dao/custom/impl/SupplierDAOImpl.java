@@ -2,8 +2,8 @@ package lk.ijse.hotel.dao.custom.impl;
 
 
 import lk.ijse.hotel.dao.custom.SupplierDAO;
-import lk.ijse.hotel.dto.SupplierDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.entity.Supplier;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,33 +16,31 @@ public class SupplierDAOImpl implements SupplierDAO{
     }
 
     @Override
-    public boolean update(SupplierDTO dto) throws SQLException {
-        return SQLUtil.execute("UPDATE supplier SET supName = ?, supContact = ?, supplyDetail = ? WHERE supId = ?", dto.getName(), dto.getContact(), dto.getDetails(), dto.getId());
+    public boolean update(Supplier entity) throws SQLException {
+        return SQLUtil.execute("UPDATE supplier SET supName = ?, supContact = ?, supplyDetail = ? WHERE supId = ?", entity.getSupName(), entity.getSupContact(), entity.getSuppyDetail(), entity.getSupId());
     }
 
     @Override
-    public boolean add(SupplierDTO dto) throws SQLException {
-        return SQLUtil.execute("INSERT INTO supplier(supId, supName, supContact, supplyDetail) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getContact(), dto.getDetails());
+    public boolean add(Supplier entity) throws SQLException {
+        return SQLUtil.execute("INSERT INTO supplier(supId, supName, supContact, supplyDetail) VALUES(?, ?, ?, ?)", entity.getSupId(), entity.getSupName(), entity.getSupContact(), entity.getSuppyDetail());
     }
 
     @Override
-    public SupplierDTO search(String id) throws SQLException {
+    public Supplier search(String id) throws SQLException {
         ResultSet rst = SQLUtil.execute("SELECT * FROM supplier WHERE supId = ?", id);
         if(rst.next()) {
-            return new SupplierDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
+            return new Supplier(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
         }
-        return null;
-    }
+        return null;    }
 
     @Override
-    public ArrayList<SupplierDTO> getAll() throws SQLException {
-        ArrayList<SupplierDTO> allSupplierDetails = new ArrayList<>();
+    public ArrayList<Supplier> getAll() throws SQLException {
+        ArrayList<Supplier> allSupplierDetails = new ArrayList<>();
         ResultSet rst = SQLUtil.execute("SELECT * FROM supplier");
         while (rst.next()) {
-            allSupplierDetails.add(new SupplierDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
+            allSupplierDetails.add(new Supplier(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
         }
-        return allSupplierDetails;
-    }
+        return allSupplierDetails;    }
 
     @Override
     public String generateNewID() throws SQLException, ClassNotFoundException {

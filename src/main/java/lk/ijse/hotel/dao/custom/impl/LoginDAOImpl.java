@@ -3,7 +3,6 @@ package lk.ijse.hotel.dao.custom.impl;
 import lk.ijse.hotel.dao.custom.LoginDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
 import lk.ijse.hotel.dto.LoginDTO;
-import lk.ijse.hotel.dto.OrderDTO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

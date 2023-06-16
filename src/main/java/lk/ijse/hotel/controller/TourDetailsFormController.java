@@ -12,12 +12,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.BookingBO;
 import lk.ijse.hotel.bo.custom.TourBO;
-import lk.ijse.hotel.dao.custom.impl.BookingDAOImpl;
-import lk.ijse.hotel.dao.custom.impl.TourDAOImpl;
-import lk.ijse.hotel.dao.custom.impl.TourDetailsDAOImpl;
+import lk.ijse.hotel.bo.custom.TourDetailsBO;
 import lk.ijse.hotel.dto.BookingDTO;
-import lk.ijse.hotel.dto.FoodDTO;
 import lk.ijse.hotel.dto.TourDTO;
 import lk.ijse.hotel.dto.TourDetailDTO;
 import lk.ijse.hotel.view.tdm.TourDetailTM;
@@ -44,6 +43,10 @@ public class TourDetailsFormController {
     public JFXButton btnUpdate;
     public JFXButton btnAdd;
     public JFXButton btnAddNew;
+    
+    TourDetailsBO tourDetailsBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.TOUR_DETAILS_BO);
+    BookingBO bookingBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.BOOKING_BO);
+    TourBO tourBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.TOUR_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -85,8 +88,6 @@ public class TourDetailsFormController {
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -98,8 +99,6 @@ public class TourDetailsFormController {
             }
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to load food ids").show();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
@@ -114,7 +113,7 @@ public class TourDetailsFormController {
     private void getAll() {
         try {
             ObservableList<TourDetailTM> obList = FXCollections.observableArrayList();
-            List<TourDetailDTO> tourDetailsList = TourDetailsDAOImpl.getAll();
+            List<TourDetailDTO> tourDetailsList = tourDetailsBO.getAllTourDetails();
 
             for (TourDetailDTO tourDetail : tourDetailsList) {
                 obList.add(new TourDetailTM(tourDetail.getBookingId(), tourDetail.getTourId(), tourDetail.getAmount(), tourDetail.getDate()));
@@ -147,7 +146,7 @@ public class TourDetailsFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = (String) cmbBookingId.getValue();
         try {
-            boolean isDeleted = TourDetailsDAOImpl.delete(id);
+            boolean isDeleted = tourDetailsBO.deleteTourDetail(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -168,7 +167,7 @@ public class TourDetailsFormController {
             if (bookingId.isEmpty() || tourId.isEmpty() || amount.isEmpty() || date.isEmpty()) {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
-            boolean isUpdated = TourDetailsDAOImpl.update(new TourDetailDTO(bookingId,tourId, amount, date));
+            boolean isUpdated = tourDetailsBO.updateTourDetail(new TourDetailDTO(bookingId,tourId, amount, date));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details updated!").show();
                 getAll();
@@ -193,7 +192,7 @@ public class TourDetailsFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = TourDetailsDAOImpl.add(new TourDetailDTO(bookingId,tourId, amount, date));
+            boolean isSaved = tourDetailsBO.addTourDetail(new TourDetailDTO(bookingId,tourId, amount, date));
             if(isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour Details saved!").show();
                 getAll();

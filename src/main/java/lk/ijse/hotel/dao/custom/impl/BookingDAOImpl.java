@@ -1,9 +1,9 @@
 package lk.ijse.hotel.dao.custom.impl;
 
 import lk.ijse.hotel.dao.custom.BookingDAO;
-import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.entity.Booking;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -14,30 +14,30 @@ public class BookingDAOImpl implements BookingDAO {
     }
 
     @Override
-    public boolean update(BookingDTO dto) throws SQLException {
-        return SQLUtil.execute("UPDATE booking SET guestId = ?, roomId = ?, checkOut = ? WHERE bookingId = ?", dto.getGuestId(), dto.getRoomId(), dto.getCheckOut(), dto.getBookingId());
+    public boolean update(Booking entity) throws SQLException {
+        return SQLUtil.execute("UPDATE booking SET guestId = ?, roomId = ?, checkOut = ? WHERE bookingId = ?", entity.getGuestId(), entity.getRoomId(), entity.getCheckOut(), entity.getBookingId());
     }
 
     @Override
-    public boolean add(BookingDTO dto) throws SQLException {
-        return SQLUtil.execute("INSERT INTO booking(guestId, bookingId, bookingDate, roomId, checkIn, checkOut)VALUES(?, ?, ?, ?, ?, ?)",dto.getGuestId(),dto.getBookingId(),dto.getBookingDate(),dto.getRoomId(),dto.getCheckIn(),dto.getCheckOut());
+    public boolean add(Booking entity) throws SQLException {
+        return SQLUtil.execute("INSERT INTO booking(guestId, bookingId, bookingDate, roomId, checkIn, checkOut)VALUES(?, ?, ?, ?, ?, ?)",entity.getGuestId(),entity.getBookingId(),entity.getBookingDate(),entity.getRoomId(),entity.getCheckIn(),entity.getCheckOut());
     }
 
     @Override
-    public BookingDTO search(String id) throws SQLException {
+    public Booking search(String id) throws SQLException {
         ResultSet rst = SQLUtil.execute("SELECT * FROM booking WHERE bookingId = ?",id);
         if(rst.next()){
-            return new BookingDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6));
+            return new Booking(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6));
         }
         return null;
     }
 
     @Override
-    public ArrayList<BookingDTO> getAll() throws SQLException {
-        ArrayList<BookingDTO> allBookings= new ArrayList<>();
+    public ArrayList<Booking> getAll() throws SQLException {
+        ArrayList<Booking> allBookings= new ArrayList<>();
         ResultSet rst = SQLUtil.execute("SELECT * FROM booking");
         while (rst.next()){
-            allBookings.add(new BookingDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6)));
+            allBookings.add(new Booking(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4), rst.getString(5), rst.getString(6)));
         }
         return allBookings;
     }

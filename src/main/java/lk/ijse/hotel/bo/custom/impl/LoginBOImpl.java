@@ -1,18 +1,22 @@
 package lk.ijse.hotel.bo.custom.impl;
 
-import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.bo.custom.LoginBO;
+import lk.ijse.hotel.dao.DAOFactory;
+import lk.ijse.hotel.dao.custom.LoginDAO;
+import lk.ijse.hotel.dto.LoginDTO;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class LoginBOImpl {
-    public static ArrayList<String> loadTitles() throws SQLException {
-        ArrayList<String> allTitles = new ArrayList<>();
-        ResultSet rst = SQLUtil.execute("SELECT title FROM user");
-        while (rst.next()) {
-            allTitles.add(rst.getString(1));
+public class LoginBOImpl implements LoginBO {
+    LoginDAO loginDAO = DAOFactory.getDAOFactory().getDAO(DAOFactory.DAOTypes.LOGIN);
+    @Override
+    public ArrayList<LoginDTO> getAllLogins() throws SQLException {
+        ArrayList<LoginDTO> all = loginDAO.getAll();
+        ArrayList<LoginDTO> allLoginDetails = new ArrayList<>();
+        for(LoginDTO l : all){
+            allLoginDetails.add(new LoginDTO(l.getUserName(), l.getPassWord(), l.getTitle()));
         }
-        return allTitles;
+        return allLoginDetails;
     }
 }

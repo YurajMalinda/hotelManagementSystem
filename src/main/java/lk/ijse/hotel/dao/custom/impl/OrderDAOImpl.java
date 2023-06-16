@@ -2,47 +2,41 @@ package lk.ijse.hotel.dao.custom.impl;
 
 import lk.ijse.hotel.dao.custom.OrderDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
-import lk.ijse.hotel.db.DBConnection;
-import lk.ijse.hotel.dto.OrderDTO;
-import lk.ijse.hotel.dto.OrderDetailsDTO;
+import lk.ijse.hotel.entity.FoodOrders;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
 
 public class OrderDAOImpl implements OrderDAO {
     @Override
     public boolean delete(String s) throws SQLException {
-        return false;
+        throw new UnsupportedOperationException("This feature yet to be developed");
     }
 
     @Override
-    public boolean update(OrderDTO dto) throws SQLException {
-        return false;
+    public boolean update(FoodOrders entity) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
     }
 
     @Override
-    public boolean add(OrderDTO dto) throws SQLException {
-        return SQLUtil.execute("INSERT INTO foodOrders(orderId, date , bookingId ) VALUES(?, ?, ?)", dto.getOrderID(), dto.getDate(), dto.getBookingID());
+    public boolean add(FoodOrders entity) throws SQLException {
+        return SQLUtil.execute("INSERT INTO foodOrders(orderId, date , bookingId ) VALUES(?, ?, ?)", entity.getOrderId(), entity.getDate(), entity.getBookingId());
     }
 
     @Override
-    public OrderDTO search(String s) throws SQLException {
-        return null;
+    public FoodOrders search(String s) throws SQLException {
+        throw new UnsupportedOperationException("This feature yet to be developed");
     }
 
     @Override
-    public ArrayList<OrderDTO> getAll() throws SQLException {
+    public ArrayList<FoodOrders> getAll() throws SQLException {
         ResultSet rst = SQLUtil.execute("SELECT * FROM foodorders");
-        ArrayList<OrderDTO> allOrders = new ArrayList<>();
+        ArrayList<FoodOrders> allOrders = new ArrayList<>();
         while (rst.next()) {
-            allOrders.add(new OrderDTO(rst.getString(1), rst.getDate(2).toLocalDate(), rst.getString(3)));
+            allOrders.add(new FoodOrders(rst.getString(1), rst.getString(2), rst.getString(3)));
         }
-        return allOrders;
-    }
+        return allOrders;    }
 
     @Override
     public String generateNewID() throws SQLException, ClassNotFoundException {

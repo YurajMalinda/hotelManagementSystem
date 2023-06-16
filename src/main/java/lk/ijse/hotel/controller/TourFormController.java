@@ -12,10 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.TourBO;
 import lk.ijse.hotel.dto.TourDTO;
-import lk.ijse.hotel.view.tdm.RoomTM;
 import lk.ijse.hotel.view.tdm.TourTM;
-import lk.ijse.hotel.dao.custom.impl.TourDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -40,6 +40,8 @@ public class TourFormController {
     public TextField txtDetails;
     @FXML
     private AnchorPane tourPane;
+    
+    TourBO tourBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.TOUR_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -82,7 +84,7 @@ public class TourFormController {
     private void getAll() {
         try {
             ObservableList<TourTM> obList = FXCollections.observableArrayList();
-            List<TourDTO> tourDTOList = TourDAOImpl.getAll();
+            List<TourDTO> tourDTOList = tourBO.getAllTours();
 
             for (TourDTO tourDTO : tourDTOList) {
                 obList.add(new TourTM(
@@ -120,7 +122,7 @@ public class TourFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = TourDAOImpl.delete(id);
+            boolean isDeleted = tourBO.deleteTour(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -142,7 +144,7 @@ public class TourFormController {
         }
 
         try {
-            boolean isUpdated = TourDAOImpl.update(new TourDTO(id, name, details, price));
+            boolean isUpdated = tourBO.updateTour(new TourDTO(id, name, details, price));
             if (isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour updated!").show();
                 getAll();
@@ -165,7 +167,7 @@ public class TourFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = TourDAOImpl.add(new TourDTO(id, name, details, price));
+            boolean isSaved = tourBO.addTour(new TourDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Tour saved!").show();
                 getAll();
@@ -186,7 +188,7 @@ public class TourFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            TourDTO tourDTO = TourDAOImpl.search(txtId.getText());
+            TourDTO tourDTO = tourBO.searchTour(txtId.getText());
             if (tourDTO != null) {
                 txtId.setText(tourDTO.getId());
                 txtName.setText(tourDTO.getName());
@@ -215,7 +217,7 @@ public class TourFormController {
 
     private String generateNewTourId() {
         try {
-            return crudDAO.generateNewID();
+            return tourBO.generateNewTourID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

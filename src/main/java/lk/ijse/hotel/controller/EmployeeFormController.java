@@ -12,10 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.CrudDAO;
-import lk.ijse.hotel.dao.custom.impl.EmployeeDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.EmployeeBO;
 import lk.ijse.hotel.dto.EmployeeDTO;
-import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.EmployeeTM;
 
 
@@ -50,7 +49,7 @@ public class EmployeeFormController {
     @FXML
     private AnchorPane employeePane;
 
-    CrudDAO crudDAO = new EmployeeDAOImpl();
+    EmployeeBO employeeBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.EMPLOYEE_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -107,7 +106,7 @@ public class EmployeeFormController {
     private void getAll() {
         try {
             ObservableList<EmployeeTM> obList = FXCollections.observableArrayList();
-            List<EmployeeDTO> employeeDTOList = crudDAO.getAll();
+            List<EmployeeDTO> employeeDTOList = employeeBO.getAllEmployees();
 
             for (EmployeeDTO employeeDTO : employeeDTOList) {
                 obList.add(new EmployeeTM(
@@ -148,7 +147,7 @@ public class EmployeeFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = crudDAO.delete(id);
+            boolean isDeleted = employeeBO.deleteEmployee(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -179,7 +178,7 @@ public class EmployeeFormController {
         }
 
         try {
-            boolean isUpdated = crudDAO.update(new EmployeeDTO(id, name, gender, address, email, nic));
+            boolean isUpdated = employeeBO.updateEmployee(new EmployeeDTO(id, name, gender, address, email, nic));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Employee updated!").show();
                 getAll();
@@ -214,7 +213,7 @@ public class EmployeeFormController {
             validateEmail(email);
 
             // Save employee to database
-            boolean isSaved = crudDAO.add(new EmployeeDTO(id, name, gender, email, nic, address, userId));
+            boolean isSaved = employeeBO.addEmployee(new EmployeeDTO(id, name, gender, email, nic, address, userId));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Employee saved!").show();
                 getAll();
@@ -236,7 +235,7 @@ public class EmployeeFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            EmployeeDTO employeeDTO = (EmployeeDTO) crudDAO.search(txtId.getText());
+            EmployeeDTO employeeDTO = (EmployeeDTO) employeeBO.searchEmployee(txtId.getText());
             if (employeeDTO != null) {
                 txtId.setText(employeeDTO.getId());
                 txtName.setText(employeeDTO.getName());
@@ -258,7 +257,7 @@ public class EmployeeFormController {
 
     private String generateNewEmployeeId() {
         try {
-            return crudDAO.generateNewID();
+            return employeeBO.generateNewEmployeeID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

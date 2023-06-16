@@ -1,5 +1,6 @@
 package lk.ijse.hotel.bo.custom.impl;
 
+import lk.ijse.hotel.bo.custom.OrderBO;
 import lk.ijse.hotel.dao.custom.impl.OrderDetailsDAOImpl;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
 import lk.ijse.hotel.db.DBConnection;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderBOImpl {
+public class OrderBOImpl implements OrderBO {
     public static boolean placeOrder(List<OrderDetailsDTO> cartDTOList, String oId, String cusId) throws SQLException {
         Connection con = null;
         try {

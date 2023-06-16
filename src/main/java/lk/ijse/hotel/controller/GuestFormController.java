@@ -12,8 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.CrudDAO;
-import lk.ijse.hotel.dao.custom.impl.GuestDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.GuestBO;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.view.tdm.GuestTM;
 
@@ -49,7 +49,7 @@ public class GuestFormController {
     @FXML
     private AnchorPane guestPane;
 
-    CrudDAO crudDAO = new GuestDAOImpl();
+    GuestBO guestBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.GUEST_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -118,7 +118,7 @@ public class GuestFormController {
     private void getAll() {
         try {
             ObservableList<GuestTM> obList = FXCollections.observableArrayList();
-            List<GuestDTO> gusList = crudDAO.getAll();
+            List<GuestDTO> gusList = guestBO.getAllGuests();
 
             for (GuestDTO guestDTO : gusList) {
                 obList.add(new GuestTM(
@@ -160,7 +160,7 @@ public class GuestFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) throws SQLException {
         String id = txtId.getText();
         try {
-            boolean isDeleted = crudDAO.delete(id);
+            boolean isDeleted = guestBO.deleteGuest(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -191,7 +191,7 @@ public class GuestFormController {
         }
 
         try {
-            boolean isUpdated = crudDAO.update(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
+            boolean isUpdated = guestBO.updateGuest(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest updated!").show();
                 getAll();
@@ -226,7 +226,7 @@ public class GuestFormController {
             }
 
             // Save guest to database
-            boolean isSaved = crudDAO.add(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
+            boolean isSaved = guestBO.addGuest(new GuestDTO(userId, id, name, gender, country, zipcode, passportId));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Guest saved!").show();
                 getAll();
@@ -240,7 +240,7 @@ public class GuestFormController {
 
     public void CodeSearchOnAction(ActionEvent actionEvent) throws SQLException {
         try {
-            GuestDTO guestDTO = (GuestDTO) crudDAO.search(txtId.getText());
+            GuestDTO guestDTO = (GuestDTO) guestBO.searchGuest(txtId.getText());
             if (guestDTO != null) {
                 txtUser.setText(guestDTO.getUserId());
                 txtId.setText(guestDTO.getId());
@@ -262,7 +262,7 @@ public class GuestFormController {
 
     private String generateNewGuestId() {
         try {
-            return crudDAO.generateNewID();
+            return guestBO.generateNewGuestID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

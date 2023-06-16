@@ -12,9 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.custom.impl.InventoryDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.InventoryBO;
 import lk.ijse.hotel.dto.InventoryDTO;
-import lk.ijse.hotel.view.tdm.GuestTM;
 import lk.ijse.hotel.view.tdm.InventoryTM;
 
 import java.io.IOException;
@@ -39,6 +39,8 @@ public class InventoryFormController {
     public JFXButton btnAddNew;
     @FXML
     private AnchorPane inventoryPane;
+    
+    InventoryBO inventoryBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.INVENTORY_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -84,7 +86,7 @@ public class InventoryFormController {
     private void getAll() {
         try {
             ObservableList<InventoryTM> obList = FXCollections.observableArrayList();
-            List<InventoryDTO> inventoryDTOList = InventoryDAOImpl.getAll();
+            List<InventoryDTO> inventoryDTOList = inventoryBO.getAllItems();
 
             for (InventoryDTO inventoryDTO : inventoryDTOList) {
                 obList.add(new InventoryTM(
@@ -122,7 +124,7 @@ public class InventoryFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = InventoryDAOImpl.delete(id);
+            boolean isDeleted = inventoryBO.deleteItem(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -139,7 +141,7 @@ public class InventoryFormController {
         Double price = Double.parseDouble(txtPrice.getText());
 
         try {
-            boolean isUpdated = InventoryDAOImpl.update(new InventoryDTO(id, name, details, price));
+            boolean isUpdated = inventoryBO.updateItem(new InventoryDTO(id, name, details, price));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "item updated!").show();
                 getAll();
@@ -164,7 +166,7 @@ public class InventoryFormController {
 
             validatePrice(price);
 
-            boolean isSaved = InventoryDAOImpl.add(new InventoryDTO(id, name, details, price));
+            boolean isSaved = inventoryBO.addItem(new InventoryDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Item saved!").show();
                 getAll();
@@ -188,7 +190,7 @@ public class InventoryFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            InventoryDTO inventoryDTO = InventoryDAOImpl.search(txtId.getText());
+            InventoryDTO inventoryDTO = inventoryBO.searchItem(txtId.getText());
             if (inventoryDTO != null) {
                 txtId.setText(inventoryDTO.getId());
                 txtName.setText(inventoryDTO.getName());
@@ -220,7 +222,7 @@ public class InventoryFormController {
 
     private String generateNewItemId() {
         try {
-            return crudDAO.generateNewID();
+            return inventoryBO.generateNewItemID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

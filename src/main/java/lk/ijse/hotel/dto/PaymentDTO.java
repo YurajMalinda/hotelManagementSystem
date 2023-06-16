@@ -8,14 +8,13 @@ import lombok.*;
 @Setter
 @ToString
 public class PaymentDTO {
-    String paymentId;
-    String guestId;
-    String guestName;
-    String resId;
-    String roomId;
-    String checkIn;
-    String checkOut;
-    Double orderAm;
-    Double total;
-
+    private String paymentId;
+    private String guestId;
+    private String guestName;
+    private String resId;
+    private String roomId;
+    private String checkIn;
+    private String checkOut;
+    private Double orderAm;
+    private Double total;
 }

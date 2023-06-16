@@ -2,7 +2,7 @@ package lk.ijse.hotel.dao.custom.impl;
 
 import lk.ijse.hotel.dao.custom.UserDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
-import lk.ijse.hotel.dto.UserDTO;
+import lk.ijse.hotel.entity.User;
 
 
 import java.sql.ResultSet;
@@ -16,33 +16,31 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean update(UserDTO dto) throws SQLException {
-        return SQLUtil.execute("UPDATE user SET userName = ?, password = ?, title = ? WHERE userId = ?", dto.getName(), dto.getPassword(), dto.getTitle(), dto.getId());
+    public boolean update(User entity) throws SQLException {
+        return SQLUtil.execute("UPDATE user SET userName = ?, password = ?, title = ? WHERE userId = ?", entity.getUserName(), entity.getPassword(), entity.getTitle(), entity.getUserId());
     }
 
     @Override
-    public boolean add(UserDTO dto) throws SQLException {
-        return SQLUtil.execute("INSERT INTO User(userId, userName, password, title) VALUES(?, ?, ?, ?)", dto.getId(), dto.getName(), dto.getPassword(), dto.getTitle());
+    public boolean add(User entity) throws SQLException {
+        return SQLUtil.execute("INSERT INTO User(userId, userName, password, title) VALUES(?, ?, ?, ?)", entity.getUserId(), entity.getUserName(), entity.getPassword(), entity.getTitle());
     }
 
     @Override
-    public UserDTO search(String id) throws SQLException {
+    public User search(String id) throws SQLException {
         ResultSet rst = SQLUtil.execute("SELECT * FROM user WHERE userId = ?", id);
         if(rst.next()) {
-            return new UserDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
+            return new User(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4));
         }
-        return null;
-    }
+        return null;    }
 
     @Override
-    public ArrayList<UserDTO> getAll() throws SQLException {
-        ArrayList<UserDTO> allUserDetails = new ArrayList<>();
+    public ArrayList<User> getAll() throws SQLException {
+        ArrayList<User> allUserDetails = new ArrayList<>();
         ResultSet rst = SQLUtil.execute("SELECT * FROM user");
         while (rst.next()) {
-            allUserDetails.add(new UserDTO(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
+            allUserDetails.add(new User(rst.getString(1), rst.getString(2), rst.getString(3), rst.getString(4)));
         }
-        return allUserDetails;
-    }
+        return allUserDetails;    }
 
     @Override
     public String generateNewID() throws SQLException, ClassNotFoundException {

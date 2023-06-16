@@ -1,4 +1,4 @@
 package lk.ijse.hotel.bo;
 
-public class BoFactory {
+public interface SuperBO {
 }

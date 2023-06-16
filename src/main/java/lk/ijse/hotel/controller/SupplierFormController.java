@@ -12,10 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.SupplierBO;
 import lk.ijse.hotel.dto.SupplierDTO;
-import lk.ijse.hotel.view.tdm.RoomTM;
 import lk.ijse.hotel.view.tdm.SupplierTM;
-import lk.ijse.hotel.dao.custom.impl.SupplierDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -39,6 +39,8 @@ public class SupplierFormController {
     public TextField txtDetails;
     @FXML
     private AnchorPane supplierPane;
+    
+    SupplierBO supplierBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.SUPPLIER_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -82,7 +84,7 @@ public class SupplierFormController {
     private void getAll () {
         try {
             ObservableList<SupplierTM> obList = FXCollections.observableArrayList();
-            List<SupplierDTO> supplierDTOList = SupplierDAOImpl.getAll();
+            List<SupplierDTO> supplierDTOList = supplierBO.getAllSuppliers();
 
             for (SupplierDTO supplierDTO : supplierDTOList) {
                 obList.add(new SupplierTM(
@@ -120,7 +122,7 @@ public class SupplierFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = SupplierDAOImpl.delete(id);
+            boolean isDeleted = supplierBO.deleteSupplier(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -141,7 +143,7 @@ public class SupplierFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isUpdated = SupplierDAOImpl.update(new SupplierDTO(id, name, contact, details));
+            boolean isUpdated = supplierBO.updateSupplier(new SupplierDTO(id, name, contact, details));
             if (isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier updated!").show();
                 getAll();
@@ -165,7 +167,7 @@ public class SupplierFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = SupplierDAOImpl.add(new SupplierDTO(id, name, contact, details));
+            boolean isSaved = supplierBO.addSupplier(new SupplierDTO(id, name, contact, details));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Supplier saved!").show();
                 getAll();
@@ -179,7 +181,7 @@ public class SupplierFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            SupplierDTO supplierDTO = SupplierDAOImpl.search(txtId.getText());
+            SupplierDTO supplierDTO = supplierBO.searchSupplier(txtId.getText());
             if (supplierDTO != null) {
                 txtId.setText(supplierDTO.getId());
                 txtName.setText(supplierDTO.getName());
@@ -208,7 +210,7 @@ public class SupplierFormController {
 
     private String generateNewSupplierId() {
         try {
-            return crudDAO.generateNewID();
+            return supplierBO.generateNewSupplierID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

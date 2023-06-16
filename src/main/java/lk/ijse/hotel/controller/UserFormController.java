@@ -14,9 +14,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.UserBO;
 import lk.ijse.hotel.dto.UserDTO;
 import lk.ijse.hotel.view.tdm.UserTM;
-import lk.ijse.hotel.dao.custom.impl.UserDAOImpl;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -37,6 +38,8 @@ public class UserFormController {
     public JFXButton btnUpdate;
     public JFXButton btnAdd;
     public JFXButton btnAddNew;
+
+    UserBO userBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.USER_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -78,7 +81,7 @@ public class UserFormController {
     private void getAll() {
         try {
             ObservableList<UserTM> obList = FXCollections.observableArrayList();
-            List<UserDTO> userDTOList = UserDAOImpl.getAll();
+            List<UserDTO> userDTOList = userBO.getAllUsers();
 
             for (UserDTO userDTO : userDTOList) {
                 obList.add(new UserTM(
@@ -116,7 +119,7 @@ public class UserFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = UserDAOImpl.delete(id);
+            boolean isDeleted = userBO.deleteUser(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -135,7 +138,7 @@ public class UserFormController {
         validateFields(id, name, password, title);
 
         try {
-            boolean isUpdated = UserDAOImpl.update(new UserDTO(id, name, password, title));
+            boolean isUpdated = userBO.updateUser(new UserDTO(id, name, password, title));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User updated!").show();
                 getAll();
@@ -159,7 +162,7 @@ public class UserFormController {
             // Validate user ID
             validateUserId(id);
 
-            boolean isSaved = UserDAOImpl.add(new UserDTO(id, name, password, title));
+            boolean isSaved = userBO.addUser(new UserDTO(id, name, password, title));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "User saved!").show();
                 getAll();
@@ -188,7 +191,7 @@ public class UserFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            UserDTO userDTO = UserDAOImpl.search(txtId.getText());
+            UserDTO userDTO = userBO.searchUser(txtId.getText());
             if (userDTO != null) {
                 txtId.setText(userDTO.getId());
                 txtName.setText(userDTO.getName());

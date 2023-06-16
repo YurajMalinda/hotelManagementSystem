@@ -12,10 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.CrudDAO;
-import lk.ijse.hotel.dao.custom.impl.FoodDAOImpl;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.FoodBO;
 import lk.ijse.hotel.dto.FoodDTO;
-import lk.ijse.hotel.view.tdm.EmployeeTM;
 import lk.ijse.hotel.view.tdm.FoodTM;
 
 import java.io.IOException;
@@ -41,7 +40,7 @@ public class FoodFormController {
     @FXML
     private AnchorPane foodPane;
 
-    CrudDAO crudDAO = new FoodDAOImpl();
+    FoodBO foodBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.FOOD_BO);
 
     public void initialize() {
         setCellValueFactory();
@@ -89,7 +88,7 @@ public class FoodFormController {
     private void getAll() {
         try {
             ObservableList<FoodTM> obList = FXCollections.observableArrayList();
-            List<FoodDTO> foodDTOList = crudDAO.getAll();
+            List<FoodDTO> foodDTOList = foodBO.getAllFoods();
 
             for (FoodDTO foodDTO : foodDTOList) {
                 obList.add(new FoodTM(
@@ -127,7 +126,7 @@ public class FoodFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String id = txtId.getText();
         try {
-            boolean isDeleted = crudDAO.delete(id);
+            boolean isDeleted = foodBO.deleteFood(id);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "deleted!").show();
                 getAll();
@@ -148,7 +147,7 @@ public class FoodFormController {
         }
 
         try {
-            boolean isUpdated = crudDAO.update(new FoodDTO(id, name, details, price));
+            boolean isUpdated = foodBO.updateFood(new FoodDTO(id, name, details, price));
             if(isUpdated) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food updated!").show();
                 getAll();
@@ -170,7 +169,7 @@ public class FoodFormController {
                 throw new IllegalArgumentException("Please fill out all the required fields!");
             }
 
-            boolean isSaved = crudDAO.add(new FoodDTO(id, name, details, price));
+            boolean isSaved = foodBO.addFood(new FoodDTO(id, name, details, price));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Food saved!").show();
                 getAll();
@@ -184,7 +183,7 @@ public class FoodFormController {
 
     public void codeSearchOnAction(ActionEvent actionEvent) {
         try {
-            FoodDTO foodDTO = (FoodDTO) crudDAO.search(txtId.getText());
+            FoodDTO foodDTO = (FoodDTO) foodBO.searchFood(txtId.getText());
             if (foodDTO != null) {
                 txtId.setText(foodDTO.getId());
                 txtName.setText(foodDTO.getName());
@@ -198,7 +197,7 @@ public class FoodFormController {
 
     private String generateNewFoodId() {
         try {
-            return crudDAO.generateNewID();
+            return foodBO.generateNewFoodID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {

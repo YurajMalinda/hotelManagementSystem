@@ -12,10 +12,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import lk.ijse.hotel.dao.custom.impl.*;
+import lk.ijse.hotel.bo.BOFactory;
+import lk.ijse.hotel.bo.custom.BookingBO;
+import lk.ijse.hotel.bo.custom.GuestBO;
+import lk.ijse.hotel.bo.custom.PaymentBO;
+import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dto.*;
-import lk.ijse.hotel.view.tdm.BookingTM;
 import lk.ijse.hotel.view.tdm.PaymentTM;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
@@ -68,6 +71,11 @@ public class PaymentFormController {
     public JFXButton btnDelete;
     public JFXButton btnUpdate;
     public JFXButton btnAdd;
+    
+    PaymentBO paymentBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.PAYMENT_BO);
+    BookingBO bookingBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.BOOKING_BO);
+    RoomBO roomBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.ROOM_BO);
+    GuestBO guestBO = BOFactory.getBOFactory().getBO(BOFactory.BOTypes.GUEST_BO);
 
     public void initialize() {
         getAll();
@@ -152,7 +160,7 @@ public class PaymentFormController {
     private void getAll() {
         try {
             ObservableList<PaymentTM> obList = FXCollections.observableArrayList();
-            List<PaymentDTO> paymentDTOList = PaymentDAOImpl.getAll();
+            List<PaymentDTO> paymentDTOList = paymentBO.getAllPayments();
 
             for (PaymentDTO paymentDTO : paymentDTOList) {
                 obList.add(new PaymentTM(paymentDTO.getPaymentId(), paymentDTO.getGuestId(), paymentDTO.getGuestName(), paymentDTO.getResId(), paymentDTO.getRoomId(), paymentDTO.getCheckIn(), paymentDTO.getCheckOut(), paymentDTO.getOrderAm(), paymentDTO.getTotal()));
@@ -167,15 +175,15 @@ public class PaymentFormController {
     public void resOnAction(){
         String id = txtBookingId.getText();
         try {
-            BookingDTO res = BookingDAOImpl.search(id);
+            BookingDTO res = bookingBO.searchBooking(id);
             Double orderAm = getOrderAmmount(id);
 
             LocalDate checkIn = LocalDate.parse(res.getCheckIn());
             LocalDate checkOut = LocalDate.parse(res.getCheckOut());
-            RoomDTO roomDTO = RoomDAOImpl.search(res.getRoomId());
+            RoomDTO roomDTO = roomBO.searchRoom(res.getRoomId());
             Double price = Double.valueOf(roomDTO.getPrice());
             Double roomPrice = calculateRoomPrice(checkIn,checkOut,price);
-            GuestDTO guestDTO = GuestDAOImpl.search(res.getGuestId());
+            GuestDTO guestDTO = guestBO.searchGuest(res.getGuestId());
             Double finalAmmount = orderAm+roomPrice;
             fillResFields(res,orderAm,finalAmmount, guestDTO);
 
@@ -218,7 +226,7 @@ public class PaymentFormController {
     public void btnDeleteOnAction(ActionEvent actionEvent) {
         String paymentId = txtPaymentId.getText();
         try {
-            boolean isDeleted = PaymentDAOImpl.delete(paymentId);
+            boolean isDeleted = paymentBO.deletePayment(paymentId);
             if (isDeleted) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment Deleted!").show();
                 clearTxt();
@@ -245,7 +253,7 @@ public class PaymentFormController {
         Double totalPrice = Double.valueOf(lblPrice.getText());
 
         try {
-            boolean isUpdated = PaymentDAOImpl.update(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
+            boolean isUpdated = paymentBO.updatePayment(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
             if(isUpdated){
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment updated!").show();
                 getAll();
@@ -273,7 +281,7 @@ public class PaymentFormController {
         String release = "Available";
 
         try {
-            boolean isSaved = PaymentDAOImpl.add(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
+            boolean isSaved = paymentBO.addPayment(new PaymentDTO(paymentId,guestId,guestName,reservationId,roomId,checkinDate,checkoutDate,ordersAm,totalPrice));
             if (isSaved) {
                 new Alert(Alert.AlertType.CONFIRMATION, "Payment saved!").show();
                 roomBO.releaseRoom(roomId,release);
@@ -318,7 +326,7 @@ public class PaymentFormController {
 
     private String generateNewPaymentId() {
         try {
-            return crudDAO.generateNewID();
+            return paymentBO.generateNewPaymentID();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new id " + e.getMessage()).show();
         } catch (ClassNotFoundException e) {
