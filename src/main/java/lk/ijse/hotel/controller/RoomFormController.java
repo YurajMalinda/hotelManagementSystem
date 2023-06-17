@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import lk.ijse.hotel.bo.BOFactory;
 import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.dto.RoomDTO;
-import lk.ijse.hotel.view.tdm.RoomTM;
+import lk.ijse.hotel.dto.tdm.RoomTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -106,14 +106,14 @@ public class RoomFormController {
 
     public void btnBackOnAction(javafx.event.ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1){
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) roomPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else{
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) roomPane.getScene().getWindow();
             stage.setTitle("Dashboard");
@@ -170,11 +170,12 @@ public class RoomFormController {
                 new Alert(Alert.AlertType.CONFIRMATION, "Room saved!").show();
                 getAll();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
-        }catch (SQLException e) {
-            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
+//        catch (SQLException e) {
+//            new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
+//        }
     }
 
     public void codeSearchOnAction(ActionEvent actionEvent) {

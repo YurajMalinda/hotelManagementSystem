@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="userPane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.UserFormController">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b3ffe3" height="50.0" layoutX="342.0" stroke="BLACK" strokeType="INSIDE" width="243.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00ffc3" height="671.0" layoutY="-4.0" opacity="0.11" stroke="BLACK" strokeType="INSIDE" width="914.0" />
+        <Label layoutX="402.0" layoutY="14.0" text="User Form" textAlignment="CENTER" textFill="#3e0505">
+            <font>
+                <Font name="Times New Roman Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="99.0" styleClass="text-field" text="User ID - ">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="152.0" styleClass="text-field" text="User Name - ">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <TextField fx:id="txtName" focusTraversable="false" layoutX="196.0" layoutY="150.0" />
+        <TableView fx:id="tblUser" focusTraversable="false" layoutX="83.0" layoutY="353.0" prefHeight="228.0" prefWidth="751.0" styleClass="tbl">
+            <columns>
+                <TableColumn fx:id="colId" prefWidth="134.0" text="ID" />
+                <TableColumn fx:id="colName" prefWidth="173.0" text="User Name" />
+                <TableColumn fx:id="colPassword" minWidth="0.0" prefWidth="274.0" text="Password" />
+            <TableColumn fx:id="colTitle" minWidth="0.0" prefWidth="169.0" text="Title" />
+            </columns>
+        </TableView>
+        <Accordion />
+        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="604.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Back" />
+        <JFXButton fx:id="btnDelete" buttonType="RAISED" focusTraversable="false" layoutX="600.0" layoutY="300.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
+        <JFXButton fx:id="btnUpdate" buttonType="RAISED" focusTraversable="false" layoutX="507.0" layoutY="300.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
+        <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="440.0" layoutY="299.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
+        <JFXButton fx:id="btnAddNew" buttonType="RAISED" focusTraversable="false" layoutX="676.0" layoutY="300.0" onAction="#btnAddNewOnAction" prefHeight="31.0" prefWidth="135.0" ripplerFill="#d31919" styleClass="button-update" text="+ New User" />
+        <TextField fx:id="txtId" focusTraversable="false" layoutX="196.0" layoutY="94.0" onAction="#codeSearchOnAction" />
+        <Label focusTraversable="false" layoutX="75.0" layoutY="208.0" styleClass="text-field" text="Password - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+      <TextField fx:id="txtPassword" focusTraversable="false" layoutX="196.0" layoutY="203.0" />
+      <Label focusTraversable="false" layoutX="75.0" layoutY="264.0" styleClass="text-field" text="Position">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtTitle" focusTraversable="false" layoutX="196.0" layoutY="262.0" />
+    </children>
+    <stylesheets>
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
+    </stylesheets>
+</AnchorPane>

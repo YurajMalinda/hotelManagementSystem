@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="paymentPane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.PaymentFormController">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b3ffe3" height="50.0" layoutX="342.0" stroke="BLACK" strokeType="INSIDE" width="243.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00ffc3" height="671.0" layoutX="7.0" layoutY="2.0" opacity="0.11" stroke="BLACK" strokeType="INSIDE" width="914.0" />
+        <Label layoutX="390.0" layoutY="11.0" text="Payment Form" textAlignment="CENTER" textFill="#3e0505">
+            <font>
+                <Font name="Times New Roman Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="67.0" styleClass="text-field" text="Payment Id -">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="105.0" styleClass="text-field" text="Guest Id - ">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="148.0" styleClass="text-field" text="Guest Name - ">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <TableView fx:id="tblPayment" focusTraversable="false" layoutX="11.0" layoutY="359.0" prefHeight="228.0" prefWidth="906.0" styleClass="tbl">
+            <columns>
+                <TableColumn fx:id="colPaymentId" minWidth="0.0" prefWidth="88.0" styleClass="tree-col" text="Payment Id" />
+                <TableColumn fx:id="colGuestId" prefWidth="73.0" styleClass="tree-col" text="Guest Id" />
+                <TableColumn fx:id="colName" minWidth="0.0" prefWidth="141.0" styleClass="tree-col" text="Guest Name" />
+                <TableColumn fx:id="colBookingId" minWidth="0.0" prefWidth="84.0" styleClass="tree-col" text="Booking Id" />
+                <TableColumn fx:id="colRoomId" minWidth="0.0" prefWidth="68.0" styleClass="tree-col" text="Room Id" />
+                <TableColumn fx:id="colCheckIn" minWidth="0.0" prefWidth="137.0" styleClass="tree-col" text="Check In" />
+            <TableColumn fx:id="colCheckOut" minWidth="0.0" prefWidth="121.0" styleClass="tree-col" text="Check Out" />
+            <TableColumn fx:id="colAmount" minWidth="0.0" prefWidth="71.0" styleClass="tree-col" text="Amount" />
+            <TableColumn fx:id="colTotal" minWidth="0.0" prefWidth="122.0" styleClass="tree-col" text="Total" />
+            </columns>
+        </TableView>
+        <Accordion />
+        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="604.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Back" />
+        <JFXButton fx:id="btnDelete" buttonType="RAISED" focusTraversable="false" layoutX="565.0" layoutY="313.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
+        <JFXButton fx:id="btnUpdate" buttonType="RAISED" focusTraversable="false" layoutX="474.0" layoutY="312.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
+        <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="407.0" layoutY="312.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
+        <JFXButton fx:id="btnAddNew" buttonType="RAISED" focusTraversable="false" layoutX="644.0" layoutY="313.0" onAction="#btnAddNewOnAction" prefHeight="31.0" prefWidth="135.0" ripplerFill="#d31919" styleClass="button-update" text="+ New Payment" />
+        <Label focusTraversable="false" layoutX="75.0" layoutY="189.0" styleClass="text-field" text="Check In - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="229.0" styleClass="text-field" text="Check Out - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="419.0" layoutY="105.0" styleClass="text-field" text="Room ID - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+      <TextField fx:id="txtPaymentId" focusTraversable="false" layoutX="192.0" layoutY="62.0" />
+      <Label fx:id="lblGuestId" focusTraversable="false" layoutX="196.0" layoutY="100.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label fx:id="lblName" focusTraversable="false" layoutX="196.0" layoutY="143.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label focusTraversable="false" layoutX="419.0" layoutY="67.0" styleClass="text-field" text="Booking Id -">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtBookingId" focusTraversable="false" layoutX="541.0" layoutY="62.0" onAction="#codeSearchOnAction" />
+      <Label fx:id="lblRoomId" focusTraversable="false" layoutX="540.0" layoutY="100.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label focusTraversable="false" layoutX="75.0" layoutY="271.0" styleClass="text-field" text="Orders Amount - ">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblAmount" focusTraversable="false" layoutX="196.0" layoutY="266.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label focusTraversable="false" layoutX="419.0" layoutY="148.0" styleClass="text-field" text="Total Price - ">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="lblPrice" focusTraversable="false" layoutX="540.0" layoutY="143.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label fx:id="lblCheckIn" focusTraversable="false" layoutX="197.0" layoutY="184.0" prefHeight="31.0" prefWidth="187.0" />
+      <Label fx:id="lblCheckOut" focusTraversable="false" layoutX="197.0" layoutY="224.0" prefHeight="31.0" prefWidth="187.0" />
+    </children>
+    <stylesheets>
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
+    </stylesheets>
+</AnchorPane>

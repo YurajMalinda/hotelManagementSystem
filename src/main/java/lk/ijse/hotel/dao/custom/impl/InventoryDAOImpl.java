@@ -49,7 +49,7 @@ public class InventoryDAOImpl implements InventoryDAO {
     public String generateNewID() throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute("SELECT itemId FROM inventory ORDER BY itemId DESC LIMIT 1;");
         if (rst.next()) {
-            String id = rst.getString("id");
+            String id = rst.getString("itemId");
             int newInventoryId = Integer.parseInt(id.replace("I00-", "")) + 1;
             return String.format("I00-%03d", newInventoryId);
         } else {

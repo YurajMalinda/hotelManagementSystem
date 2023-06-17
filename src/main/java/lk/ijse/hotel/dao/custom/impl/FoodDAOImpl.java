@@ -49,7 +49,7 @@ public class FoodDAOImpl implements FoodDAO {
     public String generateNewID() throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute("SELECT foodId FROM food ORDER BY foodId DESC LIMIT 1;");
         if (rst.next()) {
-            String id = rst.getString("id");
+            String id = rst.getString("foodId");
             int newFoodId = Integer.parseInt(id.replace("F00-", "")) + 1;
             return String.format("F00-%03d", newFoodId);
         } else {

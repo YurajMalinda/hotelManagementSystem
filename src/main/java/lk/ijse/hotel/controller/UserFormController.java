@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 import lk.ijse.hotel.bo.BOFactory;
 import lk.ijse.hotel.bo.custom.UserBO;
 import lk.ijse.hotel.dto.UserDTO;
-import lk.ijse.hotel.view.tdm.UserTM;
+import lk.ijse.hotel.dto.tdm.UserTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -53,10 +53,6 @@ public class UserFormController {
         txtName.clear();
         txtPassword.clear();
         txtTitle.clear();
-        txtId.setDisable(true);
-        txtName.setDisable(true);
-        txtPassword.setDisable(true);
-        txtTitle.setDisable(true);
         txtTitle.setOnAction(event -> btnAdd.fire());
     }
 
@@ -100,14 +96,14 @@ public class UserFormController {
 
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1){
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) userPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else{
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) userPane.getScene().getWindow();
             stage.setTitle("Dashboard");
@@ -210,11 +206,6 @@ public class UserFormController {
         txtName.clear();
         txtPassword.clear();
         txtTitle.clear();
-        txtId.setDisable(false);
-        txtName.setDisable(false);
-        txtPassword.setDisable(false);
-        txtTitle.setDisable(false);
-        txtId.requestFocus();
         tblUser.getSelectionModel().clearSelection();
     }
 }

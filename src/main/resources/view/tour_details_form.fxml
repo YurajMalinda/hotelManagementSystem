@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="tourDetailsPane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.TourDetailsFormController">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b3ffe3" height="50.0" layoutX="342.0" stroke="BLACK" strokeType="INSIDE" width="243.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00ffc3" height="671.0" layoutY="2.0" opacity="0.11" stroke="BLACK" strokeType="INSIDE" width="914.0" />
+        <Label layoutX="362.0" layoutY="11.0" text="Tour Details Form" textAlignment="CENTER" textFill="#3e0505">
+            <font>
+                <Font name="Times New Roman Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label layoutX="75.0" layoutY="82.0" styleClass="text-field" text="Booking ID">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <Label layoutX="75.0" layoutY="119.0" styleClass="text-field" text="Tour ID">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <Label layoutX="75.0" layoutY="216.0" styleClass="text-field" text="Date">
+            <font>
+                <Font size="15.0" />
+            </font></Label>
+        <TableView fx:id="tblTourDetails" focusTraversable="false" layoutX="65.0" layoutY="344.0" prefHeight="228.0" prefWidth="785.0" styleClass="tbl">
+            <columns>
+                <TableColumn fx:id="colBookingId" prefWidth="127.0" styleClass="tree-col" text="Booking ID" />
+                <TableColumn fx:id="colTourId" prefWidth="200.0" styleClass="tree-col" text="Tour ID" />
+                <TableColumn fx:id="colAmount" minWidth="0.0" prefWidth="273.0" styleClass="tree-col" text="Number of guests" />
+                <TableColumn fx:id="colDate" minWidth="0.0" prefWidth="184.0" styleClass="tree-col" text="Date" />
+            </columns>
+        </TableView>
+        <Accordion />
+        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="799.0" layoutY="604.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Back" />
+        <JFXButton fx:id="btnDelete" buttonType="RAISED" focusTraversable="false" layoutX="565.0" layoutY="294.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="68.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
+        <JFXButton fx:id="btnUpdate" buttonType="RAISED" focusTraversable="false" layoutX="474.0" layoutY="294.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
+        <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="407.0" layoutY="293.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
+        <JFXButton fx:id="btnAddNew" buttonType="RAISED" focusTraversable="false" layoutX="642.0" layoutY="294.0" onAction="#btnAddNewOnAction" prefHeight="31.0" prefWidth="135.0" ripplerFill="#d31919" styleClass="button-update" text="+ New" />
+        <Label layoutX="75.0" layoutY="169.0" styleClass="text-field" text="Number of guests ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+      <ComboBox fx:id="cmbBookingId" layoutX="195.0" layoutY="77.0" prefHeight="31.0" prefWidth="187.0" />
+      <ComboBox fx:id="cmbTourId" layoutX="195.0" layoutY="114.0" prefHeight="31.0" prefWidth="187.0" />
+      <TextField fx:id="txtAmount" focusTraversable="false" layoutX="215.0" layoutY="163.0" prefHeight="37.0" prefWidth="168.0" />
+      <DatePicker fx:id="txtDate" layoutX="195.0" layoutY="211.0" prefHeight="31.0" prefWidth="187.0" />
+    </children>
+    <stylesheets>
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
+    </stylesheets>
+</AnchorPane>

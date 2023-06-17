@@ -1,11 +1,12 @@
 package lk.ijse.hotel.bo.custom;
 
+import lk.ijse.hotel.bo.SuperBO;
 import lk.ijse.hotel.dto.GuestDTO;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface GuestBO {
+public interface GuestBO extends SuperBO {
     public boolean deleteGuest(String id) throws SQLException;
     public boolean updateGuest(GuestDTO dto) throws SQLException;
     public boolean addGuest(GuestDTO dto) throws SQLException;

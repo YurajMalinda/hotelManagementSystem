@@ -9,7 +9,7 @@ import lombok.*;
 @ToString
 
 public class LoginDTO {
-    private String title;
     private String userName;
     private String passWord;
+    private String title;
 }

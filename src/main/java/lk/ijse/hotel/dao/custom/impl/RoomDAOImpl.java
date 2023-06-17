@@ -21,7 +21,7 @@ public class RoomDAOImpl implements RoomDAO {
 
     @Override
     public boolean add(Room entity) throws SQLException {
-        return SQLUtil.execute("INSERT INTO Room(roomId, roomDetails, roomType, roomPrice) VALUES(?, ?, ?, ?)", entity.getRoomId(), entity.getRoomDetails(), entity.getRoomType(), entity.getRoomPrice());
+        return SQLUtil.execute("INSERT INTO room(roomId, roomDetails, roomType, roomPrice) VALUES(?, ?, ?, ?)", entity.getRoomId(), entity.getRoomDetails(), entity.getRoomType(), entity.getRoomPrice());
     }
 
     @Override

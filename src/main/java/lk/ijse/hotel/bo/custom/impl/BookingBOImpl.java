@@ -53,7 +53,7 @@ public class BookingBOImpl implements BookingBO {
     @Override
     public void releaseRoom(String roomId) throws SQLException {
         String release = "Booked";
-        String sql = SQLUtil.execute("UPDATE room SET roomDetails = ? WHERE roomId = ?", roomId);
+        String sql = "UPDATE room SET roomDetails = ? WHERE roomId = ?";
 
         PreparedStatement st = DBConnection.getInstance().getConnection().prepareStatement(sql);
         st.setString(1, release);

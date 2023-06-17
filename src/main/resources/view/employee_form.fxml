@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="employeePane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.EmployeeFormController">
+    <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#b3ffe3" height="50.0" layoutX="342.0" stroke="BLACK" strokeType="INSIDE" width="243.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00ffc3" height="671.0" layoutY="2.0" opacity="0.11" stroke="BLACK" strokeType="INSIDE" width="914.0" />
+        <Label layoutX="382.0" layoutY="14.0" text="Employee Form" textAlignment="CENTER" textFill="#3e0505">
+            <font>
+                <Font name="Times New Roman Bold" size="24.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="80.0" layoutY="105.0" styleClass="text-field" text="ID -">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="75.0" layoutY="146.0" styleClass="text-field" text=" Full Name -">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="74.0" layoutY="187.0" styleClass="text-field" text=" Gender - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="78.0" layoutY="264.0" styleClass="text-field" text="E mail - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="78.0" layoutY="228.0" styleClass="text-field" text="Address - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <Label focusTraversable="false" layoutX="80.0" layoutY="308.0" styleClass="text-field" text="NIC - ">
+            <font>
+                <Font size="15.0" />
+            </font>
+        </Label>
+        <TextField fx:id="txtId" focusTraversable="false" layoutX="197.0" layoutY="100.0" onAction="#codeSearchOnAction" />
+        <TextField fx:id="txtAddress" focusTraversable="false" layoutX="196.0" layoutY="223.0" />
+        <TextField fx:id="txtNic" focusTraversable="false" layoutX="196.0" layoutY="303.0" />
+        <TableView fx:id="tblEmployee" focusTraversable="false" layoutX="31.0" layoutY="374.0" prefHeight="228.0" prefWidth="853.0" styleClass="tbl">
+            <columns>
+                <TableColumn fx:id="colUserId" prefWidth="77.0" styleClass="tree-col" text="User" />
+                <TableColumn fx:id="colId" prefWidth="85.0" styleClass="tree-col" text="ID" />
+                <TableColumn fx:id="colName" minWidth="0.0" prefWidth="138.0" styleClass="tree-col" text="Name" />
+                <TableColumn fx:id="colGender" prefWidth="94.0" styleClass="tree-col" text="Gender" />
+                <TableColumn fx:id="colAddress" minWidth="0.0" prefWidth="157.0" styleClass="tree-col" text="Address" />
+                <TableColumn fx:id="colEmail" prefWidth="175.0" styleClass="tree-col" text="E mail" />
+            <TableColumn fx:id="colNic" prefWidth="126.0" styleClass="tree-col" text="NIC" />
+            </columns>
+        </TableView>
+        <Accordion />
+        <JFXButton buttonType="RAISED" focusTraversable="false" layoutX="797.0" layoutY="616.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Back" />
+        <JFXButton fx:id="btnDelete" buttonType="RAISED" focusTraversable="false" layoutX="600.0" layoutY="325.0" onAction="#btnDeleteOnAction" prefHeight="31.0" prefWidth="75.0" ripplerFill="#d31919" styleClass="button-update" text="Delete" />
+        <JFXButton fx:id="btnUpdate" buttonType="RAISED" focusTraversable="false" layoutX="509.0" layoutY="324.0" onAction="#btnUpdateOnAction" prefHeight="31.0" prefWidth="82.0" ripplerFill="#d31919" styleClass="button-update" text="Update" />
+        <JFXButton fx:id="btnAdd" buttonType="RAISED" focusTraversable="false" layoutX="442.0" layoutY="324.0" onAction="#btnAddOnAction" prefHeight="31.0" prefWidth="54.0" ripplerFill="#d31919" styleClass="button-update" text="Add" />
+        <JFXButton fx:id="btnAddNew" buttonType="RAISED" focusTraversable="false" layoutX="686.0" layoutY="325.0" onAction="#btnAddNewOnAction" prefHeight="31.0" prefWidth="135.0" ripplerFill="#d31919" styleClass="button-update" text="+ New Employee" />
+      <Label focusTraversable="false" layoutX="80.0" layoutY="64.0" styleClass="text-field" text="User - ">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txtUserId" focusTraversable="false" layoutX="197.0" layoutY="59.0" />
+      <TextField fx:id="txtName" focusTraversable="false" layoutX="196.0" layoutY="141.0" prefHeight="37.0" prefWidth="213.0" />
+      <TextField fx:id="txtEmail" focusTraversable="false" layoutX="196.0" layoutY="263.0" />
+      <CheckBox fx:id="chkMale" focusTraversable="false" layoutX="196.0" layoutY="187.0" mnemonicParsing="false" styleClass="text-field" text="Male" />
+      <CheckBox fx:id="chkFemale" focusTraversable="false" layoutX="268.0" layoutY="187.0" mnemonicParsing="false" styleClass="text-field" text="Female" />
+    </children>
+    <stylesheets>
+        <URL value="@assests/style/CrudFrom.css" />
+        <URL value="@assests/style/From.css" />
+    </stylesheets>
+</AnchorPane>

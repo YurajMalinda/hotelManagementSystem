@@ -23,7 +23,7 @@ public class UserBOImpl implements UserBO {
 
     @Override
     public boolean addUser(UserDTO dto) throws SQLException {
-        return userDAO.update(new User(dto.getId(), dto.getName(), dto.getPassword(), dto.getTitle()));
+        return userDAO.add(new User(dto.getId(), dto.getName(), dto.getPassword(), dto.getTitle()));
     }
 
     @Override

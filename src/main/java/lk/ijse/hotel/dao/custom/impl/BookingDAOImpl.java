@@ -46,7 +46,7 @@ public class BookingDAOImpl implements BookingDAO {
     public String generateNewID() throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute("SELECT bookingId FROM booking ORDER BY bookingId DESC LIMIT 1;");
         if (rst.next()) {
-            String id = rst.getString("id");
+            String id = rst.getString("bookingId");
             int newBookingId = Integer.parseInt(id.replace("B00-", "")) + 1;
             return String.format("B00-%03d", newBookingId);
         } else {

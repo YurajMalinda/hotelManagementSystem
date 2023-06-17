@@ -23,7 +23,7 @@ public class GuestBOImpl implements GuestBO {
 
     @Override
     public boolean addGuest(GuestDTO dto) throws SQLException {
-        return guestDAO.add(new Guest(dto.getUserId(), dto.getUserId(), dto.getName(), dto.getGender(), dto.getCountry(), dto.getZipCode(), dto.getPassportId()));
+        return guestDAO.add(new Guest(dto.getUserId(), dto.getId(), dto.getName(), dto.getGender(), dto.getCountry(), dto.getZipCode(), dto.getPassportId()));
     }
 
     @Override

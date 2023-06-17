@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import lk.ijse.hotel.bo.BOFactory;
 import lk.ijse.hotel.bo.custom.GuestBO;
 import lk.ijse.hotel.dto.GuestDTO;
-import lk.ijse.hotel.view.tdm.GuestTM;
+import lk.ijse.hotel.dto.tdm.GuestTM;
 
 import java.io.IOException;
 import java.sql.*;
@@ -141,14 +141,14 @@ public class GuestFormController {
 
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1) {
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) guestPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else if(BackButtonController.backButton == 0){
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) guestPane.getScene().getWindow();
             stage.setTitle("Dashboard");
@@ -297,7 +297,6 @@ public class GuestFormController {
         txtId.setDisable(false);
         txtId.setEditable(false);
         txtId.setText(generateNewGuestId());
-        txtUser.requestFocus();
         txtUser.setDisable(false);
         txtPassportId.setDisable(false);
         txtZipcode.setDisable(false);

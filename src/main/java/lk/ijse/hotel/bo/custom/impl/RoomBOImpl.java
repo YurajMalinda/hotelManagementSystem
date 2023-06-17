@@ -4,9 +4,11 @@ import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.dao.DAOFactory;
 import lk.ijse.hotel.dao.custom.RoomDAO;
 import lk.ijse.hotel.dao.custom.impl.util.SQLUtil;
+import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dto.RoomDTO;
 import lk.ijse.hotel.entity.Room;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -51,6 +53,11 @@ public class RoomBOImpl implements RoomBO {
 
     @Override
     public void releaseRoom(String roomId, String release) throws SQLException {
-        SQLUtil.execute("UPDATE room SET roomDetails = ? WHERE roomId = ?", release, roomId);
+        String sql = "UPDATE room SET roomDetails = ? WHERE roomId = ?";
+
+        PreparedStatement pstm = DBConnection.getInstance().getConnection().prepareStatement(sql);
+        pstm.setString(1, release);
+        pstm.setString(2, roomId);
+        pstm.executeUpdate();
     }
 }

@@ -47,7 +47,7 @@ public class GuestDAOImpl implements GuestDAO{
     public String generateNewID() throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute("SELECT guestId FROM guest ORDER BY guestId DESC LIMIT 1;");
         if (rst.next()) {
-            String id = rst.getString("id");
+            String id = rst.getString("guestId");
             int newGuestId = Integer.parseInt(id.replace("G00-", "")) + 1;
             return String.format("G00-%03d", newGuestId);
         } else {

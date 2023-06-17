@@ -20,7 +20,7 @@ import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.dto.BookingDTO;
 import lk.ijse.hotel.dto.GuestDTO;
 import lk.ijse.hotel.dto.RoomDTO;
-import lk.ijse.hotel.view.tdm.BookingTM;
+import lk.ijse.hotel.dto.tdm.BookingTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -81,10 +81,6 @@ public class BookingFormController {
         txtCheckIn.setDisable(true);
         txtCheckOut.setDisable(true);
         txtBookingId.setEditable(false);
-        btnAdd.setDisable(true);
-        btnDelete.setDisable(true);
-        btnUpdate.setDisable(true);
-        txtCheckOut.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -156,14 +152,14 @@ public class BookingFormController {
 
     public void btnBackOnAction(javafx.event.ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1) {
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) bookingPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else{
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) bookingPane.getScene().getWindow();
             stage.setTitle("Dashboard");
@@ -194,12 +190,9 @@ public class BookingFormController {
                 bookingBO.releaseRoom(roomId);
                 getAll();
             }
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
-        } catch (SQLException e) {
-            new Alert(Alert.AlertType.ERROR, "Failed to save employee to database!").show();
         }
-        btnAddNew.fire();
     }
 
     public void btnUpdateOnAction(ActionEvent actionEvent) {
@@ -225,7 +218,6 @@ public class BookingFormController {
             e.printStackTrace();
             new Alert(Alert.AlertType.ERROR, "something went wrong!").show();
         }
-        btnAddNew.fire();
     }
 
     public void btnDeleteOnAction(ActionEvent actionEvent) {
@@ -290,7 +282,7 @@ public class BookingFormController {
         cmbRoomId.setValue(null);
         txtCheckIn.setValue(null);
         txtCheckOut.setValue(null);
-        cmbGuestId.setDisable(true);
+        cmbGuestId.setDisable(false);
         cmbGuestId.requestFocus();
         txtBookingId.setDisable(false);
         txtBookingId.setText(generateNewBookingId());
@@ -299,9 +291,6 @@ public class BookingFormController {
         txtCheckIn.setDisable(false);
         txtCheckOut.setDisable(false);
         txtBookingId.setEditable(false);
-        btnAdd.setDisable(false);
-        btnDelete.setDisable(false);
-        btnUpdate.setDisable(false);
         tblBooking.getSelectionModel().clearSelection();
     }
 }

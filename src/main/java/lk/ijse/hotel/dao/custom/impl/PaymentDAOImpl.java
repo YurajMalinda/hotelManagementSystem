@@ -42,7 +42,7 @@ public class PaymentDAOImpl implements PaymentDAO {
     public String generateNewID() throws SQLException, ClassNotFoundException {
         ResultSet rst = SQLUtil.execute("SELECT paymentId FROM payment ORDER BY paymentId DESC LIMIT 1;");
         if (rst.next()) {
-            String id = rst.getString("id");
+            String id = rst.getString("paymentId");
             int newPaymentId = Integer.parseInt(id.replace("P00-", "")) + 1;
             return String.format("P00-%03d", newPaymentId);
         } else {

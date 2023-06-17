@@ -19,7 +19,7 @@ import lk.ijse.hotel.bo.custom.PaymentBO;
 import lk.ijse.hotel.bo.custom.RoomBO;
 import lk.ijse.hotel.db.DBConnection;
 import lk.ijse.hotel.dto.*;
-import lk.ijse.hotel.view.tdm.PaymentTM;
+import lk.ijse.hotel.dto.tdm.PaymentTM;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JRDesignQuery;
 import net.sf.jasperreports.engine.design.JasperDesign;
@@ -95,19 +95,11 @@ public class PaymentFormController {
         lblAmount.setText("");
         lblPrice.setText("");
         txtPaymentId.setDisable(true);
-        lblGuestId.setDisable(true);
-        lblName.setDisable(true);
         txtBookingId.setDisable(true);
-        lblRoomId.setDisable(true);
-        lblCheckIn.setDisable(true);
-        lblCheckOut.setDisable(true);
-        lblAmount.setDisable(true);
-        lblPrice.setDisable(true);
         txtPaymentId.setEditable(false);
         btnAdd.setDisable(true);
         btnDelete.setDisable(true);
         btnUpdate.setDisable(true);
-        txtBookingId.setOnAction(event -> btnAdd.fire());
     }
 
     private void setSelectToTxt() {
@@ -128,14 +120,14 @@ public class PaymentFormController {
 
     public void btnBackOnAction(ActionEvent actionEvent) throws IOException {
         if(BackButtonController.backButton == 1){
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
             Stage stage = (Stage) paymentPane.getScene().getWindow();
             stage.setTitle("Dashboard");
             stage.setScene(new Scene(parent));
             stage.centerOnScreen();
         }else{
-            Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+            Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
             Stage stage = (Stage) paymentPane.getScene().getWindow();
             stage.setTitle("Dashboard");
@@ -361,14 +353,7 @@ public class PaymentFormController {
         txtPaymentId.setDisable(false);
         txtPaymentId.requestFocus();
         txtPaymentId.setText(generateNewPaymentId());
-        lblGuestId.setDisable(false);
-        lblName.setDisable(false);
         txtBookingId.setDisable(false);
-        lblRoomId.setDisable(false);
-        lblCheckIn.setDisable(false);
-        lblCheckOut.setDisable(false);
-        lblAmount.setDisable(false);
-        lblPrice.setDisable(false);
         txtPaymentId.setEditable(false);
         btnAdd.setDisable(false);
         btnDelete.setDisable(false);

@@ -34,7 +34,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnGuestOnAction(ActionEvent actionEvent) throws IOException {
-        AnchorPane anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/guest_form.fxml"));
+        AnchorPane anchorPane = FXMLLoader.load(getClass().getResource("/view/guest_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
 
@@ -46,7 +46,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnRoomOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/room_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/room_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -56,7 +56,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnBookingOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/booking_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/booking_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -66,7 +66,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnPaymentOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/payment_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/payment_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -76,7 +76,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnFoodsOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/food_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/food_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -86,7 +86,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnOrdersOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/order_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/order_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -96,7 +96,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnLogOutOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/log_in_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/log_in_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -106,7 +106,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnReportsOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/report_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/report_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -116,7 +116,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnTourOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/tour_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/tour_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();
@@ -126,7 +126,7 @@ public class ReceptionistDashboardFormController implements Initializable {
     }
 
     public void btnTourDetailOnAction(ActionEvent actionEvent) throws IOException {
-        Parent anchorPane = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/tour_details_form.fxml"));
+        Parent anchorPane = FXMLLoader.load(getClass().getResource("/view/tour_details_form.fxml"));
 
         Scene scene = new Scene(anchorPane);
         Stage stage = (Stage) receptionistPane.getScene().getWindow();

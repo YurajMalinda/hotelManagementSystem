@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane fx:id="reportPane" prefHeight="671.0" prefWidth="914.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.ijse.hotel.controller.ReportFormController">
+   <children>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#00ffc3" height="671.0" opacity="0.11" stroke="BLACK" strokeType="INSIDE" width="914.0" />
+      <JFXButton buttonType="RAISED" layoutX="789.0" layoutY="594.0" onAction="#btnBackOnAction" prefHeight="31.0" prefWidth="77.0" style="-fx-background-color: white;" text="Back" />
+      <LineChart fx:id="monthlyChart" layoutX="155.0" layoutY="120.0" prefHeight="400.0" prefWidth="605.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis side="LEFT" />
+        </yAxis>
+      </LineChart>
+   </children>
+</AnchorPane>

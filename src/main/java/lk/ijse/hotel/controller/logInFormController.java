@@ -58,7 +58,7 @@ public class logInFormController {
         String password = txtPassword.getText();
         try {
             Connection conn = DBConnection.getInstance().getConnection();
-            PreparedStatement stm = conn.prepareStatement("SELECT * FROM user WHERE title = ? AND userName = ? AND password = ?");
+            PreparedStatement stm = conn.prepareStatement("SELECT * FROM login WHERE title = ? AND userName = ? AND password = ?");
             stm.setString(1, title);
             stm.setString(2, userName);
             stm.setString(3, password);

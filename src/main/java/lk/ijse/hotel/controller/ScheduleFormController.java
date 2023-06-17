@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import lk.ijse.hotel.bo.BOFactory;
 import lk.ijse.hotel.bo.custom.ScheduleBO;
 import lk.ijse.hotel.dto.ScheduleDTO;
-import lk.ijse.hotel.view.tdm.ScheduleTM;
+import lk.ijse.hotel.dto.tdm.ScheduleTM;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -86,14 +86,14 @@ public class ScheduleFormController {
 
         public void btnBackOnAction (ActionEvent actionEvent) throws IOException {
             if(BackButtonController.backButton == 1){
-                Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/dashboard_form.fxml"));
+                Parent parent = FXMLLoader.load(getClass().getResource("/view/dashboard_form.fxml"));
 
                 Stage stage = (Stage) schedulePane.getScene().getWindow();
                 stage.setTitle("Dashboard");
                 stage.setScene(new Scene(parent));
                 stage.centerOnScreen();
             }else{
-                Parent parent = FXMLLoader.load(getClass().getResource("/lk/ijse/hotel/view/receptionist_form.fxml"));
+                Parent parent = FXMLLoader.load(getClass().getResource("/view/receptionist_form.fxml"));
 
                 Stage stage = (Stage) schedulePane.getScene().getWindow();
                 stage.setTitle("Dashboard");
